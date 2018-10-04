@@ -1,6 +1,8 @@
-#we_assist
+# we_assist
 ------
 爱看不看的Readme
+
+
 Read this in yourway...emmm  :) 
 
 ------
@@ -14,7 +16,7 @@ Read this in yourway...emmm  :)
 Email：li.xiaojian233@qq.com
 
 ------
-##教程：
+## 教程：
 1、运行source 里面的main.py
 2、扫码登录即可
 3、在个人微信页面给你的文件传输助手发送帮助
@@ -22,12 +24,12 @@ Email：li.xiaojian233@qq.com
 
 
 -------
-##目前功能：
+## 目前功能：
 1、监控哪个小伙伴悄咪咪地修改了昵称或者个性签名
 2、自己探索
 
 
 ------
-##Todo
+## Todo
 1、监控头像
 2、控制撤回消息：（怀孕了大家一起想办法啊，扯什么回，玩笑玩笑……）
