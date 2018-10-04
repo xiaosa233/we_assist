@@ -22,13 +22,6 @@ def main() :
             #exit
             v_world_controller.close()
             break 
-        elif cmd == '1':
-            v_world_controller.v_itchat_controller.update_friend_infos()
-
-            print(len(v_world_controller.v_itchat_controller.v_friend_infos ))
-        elif cmd == '2':
-            v_world_controller.v_itchat_controller.test_get_header_img()
-            print('get head img done')
         else :
             print(show_cmd_helper())
 
