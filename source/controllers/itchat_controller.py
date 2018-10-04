@@ -2,6 +2,7 @@ from modules.itchat_instance import *
 from config_controller import *
 from log_controller import *
 from models import friend_info
+from utils import json_coder
 
 class itchat_controller :
 
@@ -26,10 +27,13 @@ class itchat_controller :
         self.is_logging = False
         
 # public ------------
-    def start(self) :       
+    def start(self) : 
+        #load json_data
+        self.read_friend_infos_json_data()
         self.v_itchat.login_and_run(self.get_save_data_dir())
 
     def close(self) :
+        self.write_friend_infos_json_data()
         self.v_itchat.logout()
 
     def update_friend_infos(self) :
@@ -56,10 +60,6 @@ class itchat_controller :
                     tmp_msg = response_name + ' 修改了个性签名 : ' + now_it.monitor_signature.get_last_value() + " --> " + now_it.monitor_signature.get_value()
                     response_msg += tmp_msg + "\n"
                     log_controller.g_log(tmp_msg)
-                if now_it.monitor_headimgurl.set_value( info_it['HeadImgUrl']) :
-                    #todo
-                    print(now_it.monitor_headimgurl.get_last_value(), ' chang to ', now_it.monitor_headimgurl.get_value())
-
         if response_msg != '' :
             #send to filehelper 
             self.v_itchat.send_msg_check(itchat_controller.filehelper_name, response_msg)
@@ -112,3 +112,8 @@ class itchat_controller :
 
     def show_helper(self) :
         return '1:获取所有微信好有的个性签名\n'
+
+    def read_friend_infos_json_data(self):
+        pass
+
+    def write_friend_infos_json_data(self):
