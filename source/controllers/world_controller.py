@@ -14,7 +14,7 @@ class world_controller:
         self.v_itchat_controller.start()
         
         #scheduler task to update
-        self.scheduler.enqueue(time.time(), self.v_itchat_controller.update_friend_infos, None, -1, 10 * 60) #6min
+        self.scheduler.enqueue(time.time() + 10 * 60, self.v_itchat_controller.update_friend_infos, None, -1, 10 * 60) #6min
         self.scheduler.start()
         
     def close(self) :

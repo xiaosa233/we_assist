@@ -1,5 +1,6 @@
 from controllers import *
 from enum import IntEnum
+import os
 
 
 class cmd_header(IntEnum):
@@ -30,6 +31,15 @@ def main() :
             print('get head img done')
         else :
             print(show_cmd_helper())
+
+    try :
+        sys.exit()
+    except Exception as e :
+
+        # I don't know how to exit itchat thread gracefully
+        # I can't call logout in itchat as I don't want to scan qr code every time
+        os._exit(0)
+        pass
 
 
 main()
