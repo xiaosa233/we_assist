@@ -58,6 +58,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="source\modules\EventExecutor\EventExecutor.py" />
+    <Compile Include="source\utils\json_coder.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="source\utils\__init__.py" />
   </ItemGroup>
   <ItemGroup>
