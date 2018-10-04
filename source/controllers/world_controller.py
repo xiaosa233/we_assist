@@ -2,6 +2,8 @@ from controllers import *
 from modules.scheduler import *
 import time
 
+from datetime import datetime
+
 class world_controller:
     
     def __init__(self) :
@@ -14,7 +16,7 @@ class world_controller:
         self.v_itchat_controller.start()
         
         #scheduler task to update
-        delta_time = 60*3
+        delta_time = 60 * 3
         self.scheduler.enqueue(time.time() + delta_time, self.on_update, None, -1, delta_time) #6min
         self.scheduler.start()
         
@@ -24,6 +26,6 @@ class world_controller:
         log_controller.log_controller.g_log("we_assist stop")
 
     def on_update(self) :
-        msg = time.time() + ' : update infos'
-        log_controller.g_log(msg)
+        msg = datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' : update infos'
+        log_controller.log_controller.g_log(msg)
         self.v_itchat_controller.update_friend_infos()
