@@ -125,10 +125,6 @@ class itchat_controller :
             elif msg['Content'] == '1' :
                 # get all signature
                 reply = self.on_receive_all_signature()
-            elif msg['Content'] == '2':
-                self.get_all_friend_head_imgs()
-                reply = '同步完毕！'
-                pass
 
             if reply != '':
                 self.v_itchat.send_msg_check(itchat_controller.filehelper_name, reply)
@@ -191,13 +187,11 @@ class itchat_controller :
         friend_infos = self.v_itchat.instance.get_friends(update=False)
         for item in friend_infos :
             img_path = self.get_head_img_path('all_head_imgs', item)
+            img_path = os.path.dirname(img_path) + '/' + func_library.get_windows_valid_path(self.get_friendly_name(item)) + '.png'
             self.v_itchat.get_head_img(item['UserName'], img_path)
 
             msg = self.get_friendly_name(item) + ' 的头像：'
             log_controller.g_log(msg + img_path)
-            self.v_itchat.send_msg(itchat_controller.filehelper_name, msg)
-            time.sleep(random.random())
-            self.v_itchat.send_img(itchat_controller.filehelper_name, img_path)
             time.sleep(random.random() )
 
 

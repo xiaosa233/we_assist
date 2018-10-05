@@ -21,7 +21,7 @@ class world_controller:
 
         img_delta_time = 60 * 5
         self.scheduler.enqueue(time.time() + img_delta_time, self.on_update_img_msg, None, -1, img_delta_time) #6min
-        self.scheduler.start()
+        #self.scheduler.start()
         
     def close(self) :
         self.v_itchat_controller.close()

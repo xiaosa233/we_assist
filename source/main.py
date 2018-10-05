@@ -5,9 +5,11 @@ import os
 
 class cmd_header(IntEnum):
     exit = 0
+    get_all_imgs = 1
 
 def show_cmd_helper() :
     help_str = " \n" + str(int(cmd_header.exit)) + " : exit"
+    help_str += " \n" + str(int(cmd_header.get_all_imgs)) + ' : get all head imgs'
     return help_str
 
 def main() :
@@ -23,7 +25,7 @@ def main() :
             v_world_controller.close()
             break 
         elif cmd == '2':
-            v_world_controller.v_itchat_controller.update_friend_head_imgs()
+            v_world_controller.v_itchat_controller.get_all_friend_head_imgs()
             print('done')
         else :
             print(show_cmd_helper())
