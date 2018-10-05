@@ -24,7 +24,7 @@ def main() :
             #exit
             v_world_controller.close()
             break 
-        elif cmd == '2':
+        elif cmd == str(int(cmd_header.get_all_imgs)):
             v_world_controller.v_itchat_controller.get_all_friend_head_imgs()
             print('done')
         else :
