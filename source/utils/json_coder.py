@@ -4,6 +4,7 @@ import os
 
 class json_coder:
     def __init__(self):
+        self.json_data = {}
         self.json_file_path = ''
 
     def set_path(self, file_path) :
@@ -21,10 +22,12 @@ class json_coder:
                     json_data = json.load(f)
                 except Exception as e :
                     print(e)
-        return json_data
+        self.json_data = json_data
+        return self.json_data
 
     def parse_str(self, json_str):
-        return json.load(json_str)
+        self.json_data =  json.load(json_str)
+        return self.json_data
 
     def reset(self):
         self.json_file_path = ''
@@ -38,6 +41,7 @@ class json_coder:
         with open(work_file_path, 'w', encoding='utf-8') as f :
             f.write(json.dumps(json_data ))
 
+        self.json_data = json_data
 
     @staticmethod
     def mkdir(dir) :

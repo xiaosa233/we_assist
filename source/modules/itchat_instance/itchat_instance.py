@@ -85,6 +85,12 @@ class itchat_instance:
                 msg = msg[max_words if msg_len >= max_words else msg_len:]
                 msg_len = len(msg)
 
+    def send_img(self, to_username, pic_dir) :
+        try :
+            self.instance.send_image(pic_dir, to_username)
+        except Exception as e :
+            print(e)
+
     def get_head_img(self,user_name, pic_dir) :
         itchat_instance.mkdir(os.path.dirname(pic_dir))
         try :

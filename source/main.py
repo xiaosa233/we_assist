@@ -22,6 +22,9 @@ def main() :
             #exit
             v_world_controller.close()
             break 
+        elif cmd == '2':
+            v_world_controller.v_itchat_controller.update_friend_head_imgs()
+            print('done')
         else :
             print(show_cmd_helper())
 
