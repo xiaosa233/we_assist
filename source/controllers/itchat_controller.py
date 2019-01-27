@@ -1,4 +1,4 @@
-from modules.itchat_instance import *
+import itchat_instance
 from config_controller import *
 from log_controller import *
 from models import friend_info

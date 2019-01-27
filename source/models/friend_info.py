@@ -1,4 +1,4 @@
-from modules.monitor_variable import * 
+from modules.monitor_variable_mod import *
 
 class friend_info :
 

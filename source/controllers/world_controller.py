@@ -1,9 +1,8 @@
 from controllers import * 
-from modules.scheduler import *
+from modules.scheduler_mod import *
 import time
 
 from datetime import datetime
-
 class world_controller:
     
     def __init__(self) :
