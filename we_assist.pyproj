@@ -5,8 +5,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{30e31e53-d365-4400-aac2-0b88bce9d700}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>source\main.py</StartupFile>
-    <SearchPath />
+    <StartupFile>source\test\practice.py</StartupFile>
+    <SearchPath>source</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
@@ -38,7 +38,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="source\models\__init__.py" />
-    <Compile Include="source\modules\EventExecutor\__init__.py" />
     <Compile Include="source\modules\itchat_instance\itchat_instance.py" />
     <Compile Include="source\modules\itchat_instance\__init__.py">
       <SubType>Code</SubType>
@@ -57,7 +56,17 @@
     <Compile Include="source\modules\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="source\modules\EventExecutor\EventExecutor.py" />
+    <Compile Include="source\utils\EventExecutor.py" />
+    <Compile Include="source\test\practice.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="source\test\import_source.py" />
+    <Compile Include="source\utils\base.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="source\utils\function_dispatcher.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="source\utils\func_library.py">
       <SubType>Code</SubType>
     </Compile>
@@ -70,11 +79,11 @@
     <Folder Include="source" />
     <Folder Include="source\modules\" />
     <Folder Include="source\modules\itchat_instance\" />
-    <Folder Include="source\modules\EventExecutor\" />
     <Folder Include="source\controllers\" />
     <Folder Include="source\modules\monitor_variable\" />
     <Folder Include="source\models\" />
     <Folder Include="source\modules\scheduler\" />
+    <Folder Include="source\test\" />
     <Folder Include="source\utils\" />
   </ItemGroup>
   <ItemGroup>

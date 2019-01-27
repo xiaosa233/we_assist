@@ -1,7 +1,5 @@
 from controllers import *
 from enum import IntEnum
-import os
-
 
 class cmd_header(IntEnum):
     exit = 0

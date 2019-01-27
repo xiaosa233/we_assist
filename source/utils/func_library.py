@@ -31,3 +31,4 @@ class func_library :
         if new_path == '' :
             new_path = 'impossable'
         return new_path
+
