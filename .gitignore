@@ -3,3 +3,5 @@
 e/
 save/
 **/__pycache__/
+*.pyproj
+*.sln
