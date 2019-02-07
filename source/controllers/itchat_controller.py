@@ -1,4 +1,4 @@
-import itchat_instance
+from modules.itchat_instance_mod import *
 from config_controller import *
 from log_controller import *
 from models import friend_info
@@ -244,7 +244,7 @@ class itchat_controller :
 
     def get_friendly_name_map(self, friend_infos) :
         #create_map 
-        invalid_key = [] # if there are two same friendly name then we ignore it
+        invalid_key = [] # if there are two same friendly name send_msgthen we ignore it
         name_map_key = {}
         for it in friend_infos :
             friendly_name = self.get_friendly_name(it)
@@ -257,3 +257,7 @@ class itchat_controller :
                 invalid_key.append(friendly_name)
 
         return name_map_key
+
+
+    def test_func(self):
+        self.v_itchat.send_msg(itchat_controller.filehelper_name, 'test')

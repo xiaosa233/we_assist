@@ -1,5 +1,8 @@
-from controllers import *
+from controllers import world_controller
 from enum import IntEnum
+import time
+import os
+import sys
 
 class cmd_header(IntEnum):
     exit = 0
@@ -10,23 +13,40 @@ def show_cmd_helper() :
     help_str += " \n" + str(int(cmd_header.get_all_imgs)) + ' : get all head imgs'
     return help_str
 
-def main() :
-    v_world_controller = world_controller.world_controller()
-    v_world_controller.start()
 
-    cmd = -1
-    print( show_cmd_helper() )
-    while True:
-        cmd = input()
-        if cmd == str(int(cmd_header.exit)):
-            #exit
-            v_world_controller.close()
-            break 
-        elif cmd == str(int(cmd_header.get_all_imgs)):
-            v_world_controller.v_itchat_controller.get_all_friend_head_imgs()
-            print('done')
-        else :
-            print(show_cmd_helper())
+def main() :
+    run_frame = 40 # 10hz to run
+    fix_delta_time = 1.0 / run_frame
+
+    #initialize world controller
+    v_world_controller = world_controller.world_controller()
+    v_world_controller.initialize()
+
+    pre_time = time.time()
+
+    print(fix_delta_time)
+    delta_time = fix_delta_time
+
+
+    while True :
+
+        #print('delta', delta_time)
+
+        v_world_controller.update(delta_time)
+        if v_world_controller.is_end() :
+            break
+
+        now_time = time.time()
+        delta_time = now_time - pre_time
+        pre_time = now_time
+
+        if delta_time < fix_delta_time:
+            #print('sleep : ', fix_delta_time - delta_time)
+            time.sleep(fix_delta_time - delta_time)
+            delta_time = fix_delta_time
+
+    v_world_controller.destroy()
+
 
     try :
         sys.exit()
@@ -36,6 +56,5 @@ def main() :
         # I can't call logout in itchat as I don't want to scan qr code every time
         os._exit(0)
         pass
-
 
 main()

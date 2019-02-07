@@ -1,38 +1,28 @@
-from controllers import * 
-from modules.scheduler_mod import *
-import time
 
-from datetime import datetime
+import tick_controller
+from models import input_manager
 class world_controller:
     
     def __init__(self) :
-        self.v_itchat_controller = itchat_controller.itchat_controller()
-        self.scheduler = scheduler.scheduler()
+        self.v_tick_controller = tick_controller.tick_controller()
+        self.v_input_manager = input_manager.input_manager()
 
+    def initialize(self):
+        #initialize all things here
+        self.v_tick_controller.initialize()
+        self.v_input_manager.initialize()
+        self.v_input_manager.after_input_call_back = self.is_end
 
-    def start(self) :
-        log_controller.log_controller.g_log("we_assist begin start")
-        self.v_itchat_controller.start()
-        
-        #scheduler task to update
-        text_delta_time = 60 * 1
-        self.scheduler.enqueue(time.time() + text_delta_time, self.on_update_text_msg, None, -1, text_delta_time) #6min
+    def destroy(self):
+        self.v_tick_controller.destroy()
+        self.v_input_manager.destroy()
 
-        img_delta_time = 60 * 5
-        self.scheduler.enqueue(time.time() + img_delta_time, self.on_update_img_msg, None, -1, img_delta_time) #6min
-        self.scheduler.start()
-        
-    def close(self) :
-        self.v_itchat_controller.close()
-        self.scheduler.stop()
-        log_controller.log_controller.g_log("we_assist stop")
+    def update(self, delta_time):
+        self.v_tick_controller.tick(delta_time)
 
-    def on_update_text_msg(self) :
-        msg = datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' : update text infos'
-        log_controller.log_controller.g_log(msg)
-        self.v_itchat_controller.update_friend_infos()
+    def is_end(self):
+        if self.v_input_manager.last_input == '0' :
+            self.v_input_manager.set_should_end(True)
+            return True
+        return False
 
-    def on_update_img_msg(self):
-        msg = datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' : update img infos'
-        log_controller.log_controller.g_log(msg)
-        self.v_itchat_controller.update_friend_head_imgs()

@@ -13,7 +13,6 @@ def import_module_path():
     for file_it in os.listdir(source_dir) :
         full_path_it = source_dir + "/" + file_it
         if os.path.isfile(full_path_it) and file_it[-3:] == ".py" and file_it[:-3] != "__init__" :
-            print(module_name + "." + file_it[:-3])
             __import__( module_name + "." + file_it[:-3] )
             file_names.append(file_it[:-3])
 

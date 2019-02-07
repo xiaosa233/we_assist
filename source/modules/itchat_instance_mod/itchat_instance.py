@@ -41,7 +41,7 @@ class itchat_instance:
     storage_dir is dir/ 
     '''
     def login_and_run(self, storage_dir) :
-        if self.run_thread == None :
+        if self.run_thread is None :
             storage_path = storage_dir+self.instance_name+'.pkl'
             '''
             make dir

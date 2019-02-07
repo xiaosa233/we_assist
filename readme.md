@@ -18,8 +18,10 @@ Email：li.xiaojian233@qq.com
 
 依赖库：
 
-1、itchat
-2、PIL
+1、itchat (`pip install itchat`)
+
+2、PIL (`pip install pillow`)
+
 3、python3.x （我猜的版本号）
 
 ------
