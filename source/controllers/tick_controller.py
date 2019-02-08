@@ -8,8 +8,18 @@ class tick_controller(base_controller.base_controller):
         self.pending_kill_idx = []
         self.pending_add_objs = []
         self.pending_mutex = threading.Lock()
-        function_dispatcher.open()[base.g_base_register_name].add(self.on_base_register)
-        function_dispatcher.open()[base.g_base_destroy_name].add(self.on_base_destroy)
+        self.base_function_dispatcher = None
+
+    def initialize(self):
+        self.base_function_dispatcher = function_dispatcher.open()
+        self.base_function_dispatcher[base.g_base_register_name].add(self.on_base_register)
+        self.base_function_dispatcher[base.g_base_destroy_name].add(self.on_base_destroy)
+
+    def destroy(self):
+        if self.base_function_dispatcher is not None :
+            self.base_function_dispatcher[base.g_base_register_name].remove(self.on_base_register)
+            self.base_function_dispatcher[base.g_base_destroy_name].remove(self.on_base_destroy)
+            function_dispatcher.close(self.base_function_dispatcher.name)
 
 
     def on_base_register(self, base_obj):

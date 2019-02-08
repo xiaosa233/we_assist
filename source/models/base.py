@@ -3,15 +3,18 @@ from utils.function_dispatcher import *
 class base :
     g_base_register_name = 'base_register'
     g_base_destroy_name = 'base_destroy'
+    g_function_dispatcher = None
     def __init__(self):
         self.__is_tick = False
         self.__is_pending_kill = False
+        if base.g_function_dispatcher is None :
+            base.g_function_dispatcher = function_dispatcher.open()
 
     def register(self):
-        function_dispatcher.open()[base.g_base_register_name](self)
+        base.g_function_dispatcher[base.g_base_register_name](self)
 
     def destroy(self):
-        function_dispatcher.open()[base.g_base_destroy_name](self)
+        base.g_function_dispatcher[base.g_base_destroy_name](self)
 
     #virtual
     def tick(self, delta_time):
