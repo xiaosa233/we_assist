@@ -3,9 +3,8 @@ import os
 import threading
 import time
 import random
-
-
 import ctypes
+from models import base
 
 class ns_itchat_instance:
     @staticmethod
@@ -23,11 +22,12 @@ class ns_itchat_instance:
             raise SystemError("PyThreadState_SetAsyncExc failed")
 
 
-class itchat_instance:
+class itchat_instance(base.base):
     '''
     for itchat instance
     '''
     def __init__(self, instance_name = 'default_name'):
+        super().__init__()
         self.instance_name = instance_name
         self.instance = itchat.new_instance()
         self.run_thread = None      
@@ -36,6 +36,13 @@ class itchat_instance:
         self.on_login_callback = None
         self.on_logout_callback = None
         self.on_newfriend_arrive_callback = None
+
+    def initialize(self):
+        self.register()
+
+    def tick(self, delta_time):
+        #deal with message
+        pass
 
     '''
     storage_dir is dir/ 

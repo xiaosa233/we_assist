@@ -35,7 +35,8 @@ class itchat_controller (base_controller.base_controller):
         self.update_head_img_index = 0 # use for switch path when get head imgs
         
 # public ------------
-    def start(self) : 
+    def start(self) :
+        self.v_itchat.initialize()
         self.v_itchat.login_and_run(self.get_save_data_dir())
 
     def close(self) :

@@ -24,22 +24,22 @@ class tick_controller(base_controller.base_controller):
 
     def on_base_register(self, base_obj):
         self.pending_mutex.acquire()
-        idx = self.tick_objs.find(base_obj)
-        if idx == -1 :
+        if base_obj not in self.tick_objs :
             if base_obj.is_tick and base_obj not in self.pending_add_objs:
                 #add in
                 self.pending_add_objs.append(base_obj)
         else :
             if not base_obj.is_tick and base_obj not in self.pending_kill_idx:
                 #remove
+                idx = self.tick_objs.index(base_obj)
                 self.pending_kill_idx.append(idx)
         self.pending_mutex.release()
 
     def on_base_destroy(self, base_obj):
         #add to pending
         self.pending_mutex.acquire()
-        idx = self.tick_objs.find(base_obj)
-        if idx != -1 and base_obj not in self.pending_kill_idx:
+        if base_obj in self.tick_objs and base_obj not in self.pending_kill_idx:
+            idx = self.tick_objs.index(base_obj)
             self.pending_kill_idx.append(idx)
         self.pending_mutex.release()
 
@@ -48,18 +48,21 @@ class tick_controller(base_controller.base_controller):
         i = 0
         while i< tick_obj_len :
             self.tick_objs[i].tick(delta_time)
+            i += 1
 
         #deal with pending
         self.pending_mutex.acquire()
 
         #remove pending kill objs
-        self.pending_kill_idx.sort(reverse=True)
-        for idx in self.pending_kill_idx :
-            del self.tick_objs[idx]
+        if len(self.pending_kill_idx) > 0 :
+            self.pending_kill_idx.sort(reverse=True)
+            for idx in self.pending_kill_idx :
+                del self.tick_objs[idx]
         self.pending_kill_idx.clear()
 
         #add pending objs
-        self.tick_objs.extend(self.pending_add_objs)
-        self.pending_add_objs.clear()
+        if len(self.pending_add_objs) > 0 :
+            self.tick_objs.extend(self.pending_add_objs)
+            self.pending_add_objs.clear()
 
         self.pending_mutex.release()

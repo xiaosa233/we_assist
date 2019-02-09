@@ -28,8 +28,6 @@ def main() :
 
     while True :
 
-        #print('delta', delta_time)
-
         v_world_controller.update(delta_time)
         if v_world_controller.is_end() :
             break

@@ -23,5 +23,8 @@ class input_manager:
 
     def deal_with_input(self):
         last_input = self.v_input_handle.get_reset_last_input()
-        if last_input == '0' and self.input_dispatcher is not None:
-            self.input_dispatcher['exit']()
+        if self.input_dispatcher is not None :
+            if last_input == '0':
+                self.input_dispatcher['exit']()
+            elif last_input == '1':
+                self.input_dispatcher['test']()
