@@ -56,6 +56,8 @@ class itchat_instance:
         if not is_keep_hotload :
             self.instance.logout()
             self.run_thread.join(2)
+        else :
+            ns_itchat_instance.terminate_thread(self.run_thread)
 
 
     def login_callback(self):

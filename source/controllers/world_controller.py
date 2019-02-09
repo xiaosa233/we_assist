@@ -11,7 +11,7 @@ class world_controller:
         self.should_end = False
         self.input_dispatcher = None
 
-    def initialize(self):
+    def initialize(self, sys_argv):
         #initialize all things here
         self.input_dispatcher = function_dispatcher.function_dispatcher.open('input')
         self.input_dispatcher ['exit'].add(self.on_input_event_exit)

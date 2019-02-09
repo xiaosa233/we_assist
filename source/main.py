@@ -1,4 +1,4 @@
-from controllers import world_controller
+from controllers import itchat_world_controller
 from enum import IntEnum
 import time
 import os
@@ -19,12 +19,10 @@ def main() :
     fix_delta_time = 1.0 / run_frame
 
     #initialize world controller
-    v_world_controller = world_controller.world_controller()
-    v_world_controller.initialize()
+    v_world_controller = itchat_world_controller.itchat_world_controller()
+    v_world_controller.initialize(sys.argv)
 
     pre_time = time.time()
-
-    print(fix_delta_time)
     delta_time = fix_delta_time
 
 
@@ -46,15 +44,5 @@ def main() :
             delta_time = fix_delta_time
 
     v_world_controller.destroy()
-
-
-    try :
-        sys.exit()
-    except Exception as e :
-
-        # I don't know how to exit itchat thread gracefully
-        # I can't call logout in itchat as I don't want to scan qr code every time
-        os._exit(0)
-        pass
 
 main()

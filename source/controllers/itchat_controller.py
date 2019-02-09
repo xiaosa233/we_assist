@@ -1,13 +1,14 @@
-from modules.itchat_instance_mod import *
+from modules.itchat_instance_mod import itchat_instance
 from config_controller import *
 from log_controller import *
+import base_controller
 from models import friend_info
 from utils import json_coder
 from utils.func_library import *
 import time
 import random
 
-class itchat_controller :
+class itchat_controller (base_controller.base_controller):
 
     filehelper_name = 'filehelper'
 
