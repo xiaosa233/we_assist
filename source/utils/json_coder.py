@@ -22,10 +22,11 @@ class json_coder:
         json_data = {}
         if os.path.isfile(work_file_path) and os.path.exists(work_file_path) :
             with open(work_file_path, 'r', encoding='utf-8') as f :
-                try :
-                    json_data = json.load(f)
-                except Exception as e :
-                    print(e)
+                if f != '' :
+                    try :
+                        json_data = json.load(f)
+                    except Exception as e :
+                        print(e)
         self.json_data = json_data
         return self.json_data
 
@@ -63,7 +64,7 @@ class json_coder:
         return value.parse_str(json_str)
 
     @staticmethod
-    def write_file(json_data, file_path):
+    def write_with_file(json_data, file_path):
         value = json_coder()
         value.set_path(file_path)
         value.set_json_data(json_data)

@@ -20,10 +20,12 @@ def main() :
 
     #initialize world controller
     v_world_controller = itchat_world_controller.itchat_world_controller()
+    v_world_controller.set_test_mode(False)
     v_world_controller.initialize(sys.argv)
 
     pre_time = time.time()
     delta_time = fix_delta_time
+
 
 
     while True :

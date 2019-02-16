@@ -1,4 +1,5 @@
 from modules.itchat_instance_mod import itchat_instance
+from modules.itchat_instance_mod import offline_itchat_instance
 from config_controller import *
 from log_controller import *
 import base_controller
@@ -7,6 +8,9 @@ from utils import json_coder
 from utils.func_library import *
 import time
 import random
+import itchat_file_component
+from models import json_object
+from models import global_accessor
 
 class itchat_controller (base_controller.base_controller):
 
@@ -14,7 +18,28 @@ class itchat_controller (base_controller.base_controller):
 
     def __init__(self) :
         super().__init__()
-        self.v_itchat = itchat_instance.itchat_instance()
+        self.v_itchat = None
+
+        self.v_friend_infos = {} # map , user_name to friend_info
+        self.save_data_json = json_coder.json_coder()
+        self.save_data_json.set_path( self.get_save_data_dir() + "objects/itchat_controller.json" )
+        self.is_logging = False
+
+        self.update_head_img_index = 0 # use for switch path when get head imgs
+
+        self.components = []
+        
+# public ------------
+    def start(self) :
+        world = global_accessor.global_accessor.get_safe('world')
+        is_test = False
+        if world is not None :
+            is_test = world.get_test_mode()
+
+        if not is_test :
+            self.v_itchat = itchat_instance.itchat_instance(self.get_default_login_name())
+        else :
+            self.v_itchat = offline_itchat_instance.offline_itchat_instance(self.get_default_login_name())
         #register callback
         '''
         on_receive_callback :itchat_instance , msg
@@ -27,28 +52,23 @@ class itchat_controller (base_controller.base_controller):
         self.v_itchat.on_logout_callback = self.on_logout
         self.v_itchat.on_newfriend_arrive_callback = self.on_newfriend_arrive
 
-        #add friends info 
-        self.v_friend_infos = {} # map , user_name to friend_info
-        self.save_data_json = json_coder.json_coder()
-        self.save_data_json.set_path( self.get_save_data_dir() + "objects/itchat_controller.json" )
-        self.is_logging = False
+        self.components.append( itchat_file_component.itchat_file_component(self))
 
-        self.update_head_img_index = 0 # use for switch path when get head imgs
 
-        self.components = []
-        
-# public ------------
-    def start(self) :
-        self.v_itchat.login_and_run(self.get_save_data_dir())
+        self.v_itchat.login_and_run(self.get_save_data_dir() + self.v_itchat.get_instance_name() + '/')
         for it in self.components :
             it.on_start()
 
     def close(self) :
-        self.write_json_file()
+        #self.write_json_file()
         self.v_itchat.logout()
 
         for it in self.components:
             it.on_close()
+
+    def get_itchat(self):
+        return self.v_itchat
+
 
     def update_friend_infos(self) :
         if not self.is_logging:
@@ -141,6 +161,11 @@ class itchat_controller (base_controller.base_controller):
 
 
     def on_login(self, in_itchat_instance) :
+
+        for it in self.components:
+            it.on_login()
+        return
+
         msg = self.v_itchat.instance_name + " login"
         log_controller.g_log(msg)
         self.is_logging = True
@@ -215,8 +240,19 @@ class itchat_controller (base_controller.base_controller):
     def on_newfriend_arrive(self, in_itchat_instance, msg) :
         pass
 
-    def get_save_data_dir(self) :
-        return config_controller.get_save_dir() + "data/"
+    @staticmethod
+    def get_save_data_dir() :
+        return config_controller.get_save_dir() + "itchat_data/"
+
+    @staticmethod
+    def get_default_login_name():
+        result = json_object.json_object.parse_with_file(itchat_controller.get_save_data_dir() + 'itchat_default.json', 'last_login_name')
+        if result is None :
+            result = 'default_name'
+        return result
+
+    def get_itchat_data_dir(self):
+        return itchat_controller.get_save_data_dir() + self.v_itchat.get_itchat_name() + '/'
 
     def show_helper(self) :
         return '1:获取所有微信好有的个性签名\n2:获取所有好友头像\n'

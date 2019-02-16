@@ -30,7 +30,8 @@ class itchat_instance:
         super().__init__()
         self.instance_name = instance_name
         self.itchat_name = ''
-        self.run_thread = None      
+        self.run_thread = None
+        self.instance = itchat.new_instance()
 
         self.on_receive_callback = None
         self.on_login_callback = None
@@ -102,6 +103,9 @@ class itchat_instance:
 
     def get_itchat_name(self):
         return self.itchat_name
+
+    def get_instance_name(self):
+        return self.instance_name
 
     @staticmethod
     def itchat_run(value_itchat_instance, storage_dir):
