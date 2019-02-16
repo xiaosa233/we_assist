@@ -22,14 +22,14 @@ class ns_itchat_instance:
             raise SystemError("PyThreadState_SetAsyncExc failed")
 
 
-class itchat_instance(base.base):
+class itchat_instance:
     '''
     for itchat instance
     '''
     def __init__(self, instance_name = 'default_name'):
         super().__init__()
         self.instance_name = instance_name
-        self.instance = itchat.new_instance()
+        self.itchat_name = ''
         self.run_thread = None      
 
         self.on_receive_callback = None
@@ -37,26 +37,12 @@ class itchat_instance(base.base):
         self.on_logout_callback = None
         self.on_newfriend_arrive_callback = None
 
-    def initialize(self):
-        self.register()
-
-    def tick(self, delta_time):
-        #deal with message
-        pass
-
     '''
     storage_dir is dir/ 
     '''
     def login_and_run(self, storage_dir) :
         if self.run_thread is None :
-            storage_path = storage_dir+self.instance_name+'.pkl'
-            '''
-            make dir
-            '''
-            itchat_instance.mkdir(os.path.dirname(storage_path))
-
-            self.instance.auto_login(enableCmdQR=True, hotReload= True, statusStorageDir=storage_path,loginCallback=self.login_callback,exitCallback=self.logout_callback)
-            self.run_thread = threading.Thread(target=itchat_instance.itchat_run, args=(self, ) )
+            self.run_thread = threading.Thread(target=itchat_instance.itchat_run, args=(self, storage_dir) )
             self.run_thread.start()
 
     def logout(self, is_keep_hotload = True) :
@@ -68,6 +54,8 @@ class itchat_instance(base.base):
 
 
     def login_callback(self):
+        friend_info = self.get_friend_infos(True)
+        self.itchat_name = friend_info[0]['UserName']
         if self.on_login_callback :
             self.on_login_callback(self)
 
@@ -109,8 +97,24 @@ class itchat_instance(base.base):
             print(e)
             return False
 
+    def get_friend_infos(self, update = False):
+        return self.itchat_instance.get_friends(update=update)
+
+    def get_itchat_name(self):
+        return self.itchat_name
+
     @staticmethod
-    def itchat_run(value_itchat_instance):
+    def itchat_run(value_itchat_instance, storage_dir):
+
+        storage_path = storage_dir + value_itchat_instance.instance_name + '.pkl'
+        '''
+        make dir
+        '''
+        itchat_instance.mkdir(os.path.dirname(storage_path))
+
+        value_itchat_instance.instance.auto_login(enableCmdQR=True, hotReload=True, statusStorageDir=storage_path,
+                                 loginCallback=value_itchat_instance.login_callback, exitCallback=value_itchat_instance.logout_callback)
+
         @value_itchat_instance.instance.msg_register(itchat.content.TEXT)
         def receive(msg):
             if value_itchat_instance.on_receive_callback :

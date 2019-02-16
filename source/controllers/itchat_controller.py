@@ -13,6 +13,7 @@ class itchat_controller (base_controller.base_controller):
     filehelper_name = 'filehelper'
 
     def __init__(self) :
+        super().__init__()
         self.v_itchat = itchat_instance.itchat_instance()
         #register callback
         '''
@@ -33,15 +34,21 @@ class itchat_controller (base_controller.base_controller):
         self.is_logging = False
 
         self.update_head_img_index = 0 # use for switch path when get head imgs
+
+        self.components = []
         
 # public ------------
     def start(self) :
-        self.v_itchat.initialize()
         self.v_itchat.login_and_run(self.get_save_data_dir())
+        for it in self.components :
+            it.on_start()
 
     def close(self) :
         self.write_json_file()
         self.v_itchat.logout()
+
+        for it in self.components:
+            it.on_close()
 
     def update_friend_infos(self) :
         if not self.is_logging:
@@ -156,6 +163,9 @@ class itchat_controller (base_controller.base_controller):
 
         #check friend imgs
         self.check_friend_head_imgs()
+
+        for it in self.components:
+            it.on_login()
 
     def check_friend_head_imgs(self) :
         if 'friendly_name_map' not in self.save_data_json.json_data :

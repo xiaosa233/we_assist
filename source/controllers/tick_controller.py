@@ -4,6 +4,7 @@ import base_controller
 import threading
 class tick_controller(base_controller.base_controller):
     def __init__(self):
+        super().__init__()
         self.tick_objs = []
         self.pending_kill_idx = []
         self.pending_add_objs = []
@@ -14,6 +15,7 @@ class tick_controller(base_controller.base_controller):
         self.base_function_dispatcher = function_dispatcher.open()
         self.base_function_dispatcher[base.g_base_register_name].add(self.on_base_register)
         self.base_function_dispatcher[base.g_base_destroy_name].add(self.on_base_destroy)
+
 
     def destroy(self):
         if self.base_function_dispatcher is not None :
@@ -43,7 +45,7 @@ class tick_controller(base_controller.base_controller):
             self.pending_kill_idx.append(idx)
         self.pending_mutex.release()
 
-    def tick(self, delta_time):
+    def do_ticks(self, delta_time):
         tick_obj_len = len(self.tick_objs)
         i = 0
         while i< tick_obj_len :

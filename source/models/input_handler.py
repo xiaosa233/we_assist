@@ -29,6 +29,7 @@ class input_handler(base.base) :
     def input_impl(self):
         while not self.should_end :
             self.last_input = input()
+            print('last input is : ', self.last_input)
             if self.after_input_call_back is not None :
                 self.after_input_call_back()
 

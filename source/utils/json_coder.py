@@ -10,10 +10,14 @@ class json_coder:
     def set_path(self, file_path) :
         self.json_file_path = file_path
 
-    def parse_file(self, file_path = ''):
+    def get_json_data(self):
+        return self.json_data
+
+    def set_json_data(self, in_json_data):
+        self.json_data = in_json_data
+
+    def parse_file(self):
         work_file_path = self.json_file_path
-        if os.path.isfile(file_path):
-            work_file_path = file_path
 
         json_data = {}
         if os.path.isfile(work_file_path) and os.path.exists(work_file_path) :
@@ -30,18 +34,14 @@ class json_coder:
         return self.json_data
 
     def reset(self):
+        self.json_data = {}
         self.json_file_path = ''
 
-    def write_file(self, json_data, file_path = ''):
+    def write_file(self):
         work_file_path = self.json_file_path
-        if os.path.isfile(file_path):
-            work_file_path = file_path
-
         json_coder.mkdir( os.path.dirname(work_file_path))
         with open(work_file_path, 'w', encoding='utf-8') as f :
-            f.write(json.dumps(json_data ))
-
-        self.json_data = json_data
+            f.write(json.dumps(self.json_data ))
 
     @staticmethod
     def mkdir(dir) :
@@ -50,3 +50,21 @@ class json_coder:
         '''
         if not os.path.exists( dir) :
             os.makedirs(dir)
+
+    @staticmethod
+    def parse_with_file(file_path):
+        value = json_coder()
+        value.set_path(file_path)
+        return value.parse_file()
+
+    @staticmethod
+    def parse_with_string(json_str):
+        value = json_coder()
+        return value.parse_str(json_str)
+
+    @staticmethod
+    def write_file(json_data, file_path):
+        value = json_coder()
+        value.set_path(file_path)
+        value.set_json_data(json_data)
+        value.write_file()

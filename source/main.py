@@ -39,7 +39,7 @@ def main() :
         if delta_time < fix_delta_time:
             #print('sleep : ', fix_delta_time - delta_time)
             time.sleep(fix_delta_time - delta_time)
-            delta_time = fix_delta_time
+            delta_time = delta_time + time.time() - pre_time
 
     v_world_controller.destroy()
 

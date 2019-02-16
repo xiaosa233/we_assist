@@ -26,7 +26,7 @@ class world_controller:
 
     def update(self, delta_time):
         self.v_input_manager.deal_with_input()
-        self.v_tick_controller.tick(delta_time)
+        self.v_tick_controller.do_ticks(delta_time)
 
     def is_end(self):
         return self.should_end
