@@ -56,7 +56,7 @@ class itchat_instance:
 
     def login_callback(self):
         friend_info = self.get_friend_infos(True)
-        self.itchat_name = friend_info[0]['UserName']
+        self.itchat_name = friend_info[0]['NickName']
         if self.on_login_callback :
             self.on_login_callback(self)
 
@@ -99,7 +99,7 @@ class itchat_instance:
             return False
 
     def get_friend_infos(self, update = False):
-        return self.itchat_instance.get_friends(update=update)
+        return self.instance.get_friends(update=update)
 
     def get_itchat_name(self):
         return self.itchat_name
@@ -116,7 +116,7 @@ class itchat_instance:
         '''
         itchat_instance.mkdir(os.path.dirname(storage_path))
 
-        value_itchat_instance.instance.auto_login(enableCmdQR=True, hotReload=True, statusStorageDir=storage_path,
+        value_itchat_instance.instance.auto_login(enableCmdQR=False, hotReload=True, statusStorageDir=storage_path,
                                  loginCallback=value_itchat_instance.login_callback, exitCallback=value_itchat_instance.logout_callback)
 
         @value_itchat_instance.instance.msg_register(itchat.content.TEXT)

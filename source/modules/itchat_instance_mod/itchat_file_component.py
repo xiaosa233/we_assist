@@ -16,6 +16,10 @@ class itchat_file_component(itchat_base_component.itchat_base_component) :
             src_path = self.outer.get_save_data_dir() + self.v_itchat.get_instance_name() + '/' + self.v_itchat.get_instance_name() +  '.pkl'
             dist_dir = self.outer.get_itchat_data_dir()
             dist_path = self.outer.get_itchat_data_dir() + self.v_itchat.get_itchat_name() + '.pkl'
+
+            if not path.exists(src_path):
+                return
+
             if not path.exists(dist_dir):
                 os.makedirs(dist_dir)
             shutil.copy(src_path, dist_path)

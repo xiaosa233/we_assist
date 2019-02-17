@@ -22,6 +22,9 @@ class json_object :
 
     # virtual
     def value_to_json(self, value):
+        self.set_json_data(value)
+
+    def set_json_data(self, value):
         if not self.is_key_none():
             self.v_json_coder.json_data[self.json_key] = value
         else:

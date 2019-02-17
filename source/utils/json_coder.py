@@ -42,7 +42,7 @@ class json_coder:
         work_file_path = self.json_file_path
         json_coder.mkdir( os.path.dirname(work_file_path))
         with open(work_file_path, 'w', encoding='utf-8') as f :
-            f.write(json.dumps(self.json_data ))
+            f.write(json.dumps(self.json_data, ensure_ascii=False))
 
     @staticmethod
     def mkdir(dir) :

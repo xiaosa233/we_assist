@@ -42,6 +42,6 @@ Email：li.xiaojian233@qq.com
 
 ------
 ## Todo
-1、监控头像
+1、解决登录以后不会马上生成pkl 文件的文件
 
-2、监控撤回消息
+2、弄清楚为什么会有username 记录下来

@@ -1,4 +1,4 @@
-import monitor_variable
+from models import monitor_variable
 
 class friend_info :
 

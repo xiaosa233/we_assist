@@ -3,12 +3,13 @@ from modules.itchat_instance_mod import offline_itchat_instance
 from config_controller import *
 from log_controller import *
 import base_controller
-from models import friend_info
+import friend_info
 from utils import json_coder
 from utils.func_library import *
 import time
 import random
 import itchat_file_component
+import itchat_cache_component
 from models import json_object
 from models import global_accessor
 
@@ -28,6 +29,7 @@ class itchat_controller (base_controller.base_controller):
         self.update_head_img_index = 0 # use for switch path when get head imgs
 
         self.components = []
+        self.cache_component = None
         
 # public ------------
     def start(self) :
@@ -53,6 +55,8 @@ class itchat_controller (base_controller.base_controller):
         self.v_itchat.on_newfriend_arrive_callback = self.on_newfriend_arrive
 
         self.components.append( itchat_file_component.itchat_file_component(self))
+        self.cache_component = itchat_cache_component.itchat_cache_component(self)
+        self.components.append( self.cache_component)
 
 
         self.v_itchat.login_and_run(self.get_save_data_dir() + self.v_itchat.get_instance_name() + '/')
@@ -61,10 +65,10 @@ class itchat_controller (base_controller.base_controller):
 
     def close(self) :
         #self.write_json_file()
-        self.v_itchat.logout()
-
         for it in self.components:
             it.on_close()
+        self.v_itchat.logout()
+
 
     def get_itchat(self):
         return self.v_itchat
@@ -73,29 +77,9 @@ class itchat_controller (base_controller.base_controller):
     def update_friend_infos(self) :
         if not self.is_logging:
             return
-        friend_infos = self.v_itchat.instance.get_friends(update=True)
 
-        response_msg = ''
-        for info_it in friend_infos :
-            #print(info_it['UserName'], '  ', info_it['NickName'], '  ', info_it['Signature'], )
-            if info_it['UserName'] not in self.v_friend_infos :
-                self.v_friend_infos[ info_it['UserName']] = friend_info.friend_info( info_it['UserName'], info_it['NickName'], info_it['Signature'])
-            else :
-                now_it = self.v_friend_infos[ info_it['UserName']]
-                response_name = self.get_friendly_name(info_it)
-
-                if now_it.monitor_nickname.set_value( info_it['NickName']) :
-                    tmp_msg = response_name + ' 修改了昵称 : ' + now_it.monitor_nickname.get_last_value() + " --> " + now_it.monitor_nickname.get_value()
-                    response_msg += tmp_msg + "\n"
-                    log_controller.g_log(tmp_msg)
-                if now_it.monitor_signature.set_value( info_it['Signature']) :
-                    tmp_msg = response_name + ' 修改了个性签名 : ' + now_it.monitor_signature.get_last_value() + " --> " + now_it.monitor_signature.get_value()
-                    response_msg += tmp_msg + "\n"
-                    log_controller.g_log(tmp_msg)
-        if response_msg != '' :
-            #send to filehelper 
-            self.v_itchat.send_msg_check(itchat_controller.filehelper_name, response_msg)
-            self.write_json_file()
+        if self.cache_component is not None :
+            self.cache_component.update_friend_infos(True)
 
     def update_friend_head_imgs(self) :
 
@@ -162,35 +146,15 @@ class itchat_controller (base_controller.base_controller):
 
     def on_login(self, in_itchat_instance) :
 
-        for it in self.components:
-            it.on_login()
-        return
-
-        msg = self.v_itchat.instance_name + " login"
+        msg = self.v_itchat.get_itchat_name() + " login"
         log_controller.g_log(msg)
         self.is_logging = True
 
-        #load json_data
-        self.read_json_file()
-        self.update_friend_infos()
-
-        #remove key which not in friend_infos 
-        friend_infos = self.v_itchat.instance.get_friends(update = False)
-        friend_info_keys = { it['UserName'] : 1 for it in friend_infos }
-
-        to_remove_keys = []
-        for key in self.v_friend_infos :
-            if key not in friend_info_keys :
-                to_remove_keys.append(key)
-
-        for it in to_remove_keys :
-            del self.v_friend_infos[it]
-
-        #check friend imgs
-        self.check_friend_head_imgs()
-
         for it in self.components:
             it.on_login()
+        return
+        #check friend imgs
+        self.check_friend_head_imgs()
 
     def check_friend_head_imgs(self) :
         if 'friendly_name_map' not in self.save_data_json.json_data :
@@ -235,6 +199,9 @@ class itchat_controller (base_controller.base_controller):
     def on_logout(self, in_itchat_instance) :
         msg = self.v_itchat.instance_name + " logout"
         log_controller.g_log(msg)
+
+        for it in self.components:
+            it.on_logout()
          
 
     def on_newfriend_arrive(self, in_itchat_instance, msg) :
@@ -256,56 +223,3 @@ class itchat_controller (base_controller.base_controller):
 
     def show_helper(self) :
         return '1:获取所有微信好有的个性签名\n2:获取所有好友头像\n'
-
-    def read_json_file(self) :
-        json_data = self.save_data_json.parse_file()
-        if len(json_data) > 0 :
-            self.json_data_to_friend_infos(json_data['friend_infos'])
-            self.update_head_img_index = json_data['update_head_img_index']
-
-    def write_json_file(self) :
-        json_data = {}
-        json_data['update_head_img_index'] = self.update_head_img_index #the last json_files dir 
-        json_data['friend_infos'] = self.friend_infos_to_json_data()  
-        friend_infos = self.v_itchat.instance.get_friends(update=False)
-        json_data['friendly_name_map'] = self.get_friendly_name_map(friend_infos)
-        self.save_data_json.write_file(json_data)
-
-    def friend_infos_to_json_data(self) :
-        json_data = {}
-
-        #user_name every_time is different ,so we can not user the same username
-        friend_infos = self.v_itchat.instance.get_friends(update=False)
-        for it in friend_infos :
-            json_data[ self.get_friendly_name(it)] = {'nickname' : it['NickName'], 'signature' : it['Signature']}
-        return json_data
-
-    def json_data_to_friend_infos(self, json_data) :
-        if json_data == None :
-            return 
-        friend_infos = self.v_itchat.instance.get_friends(update=False)
-        name_map_key = self.get_friendly_name_map(friend_infos)
-
-        for (key, value) in json_data.items():
-            if key in name_map_key:
-                self.v_friend_infos[name_map_key[key] ] = friend_info.friend_info( name_map_key[key], value['nickname'], value['signature'])
-
-    def get_friendly_name_map(self, friend_infos) :
-        #create_map 
-        invalid_key = [] # if there are two same friendly name send_msgthen we ignore it
-        name_map_key = {}
-        for it in friend_infos :
-            friendly_name = self.get_friendly_name(it)
-            if friendly_name in invalid_key :
-                continue
-            if friendly_name not in name_map_key :
-                name_map_key[friendly_name] = it['UserName']
-            else :
-                del name_map_key[friendly_name]
-                invalid_key.append(friendly_name)
-
-        return name_map_key
-
-
-    def test_func(self):
-        self.v_itchat.send_msg(itchat_controller.filehelper_name, 'test')
