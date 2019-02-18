@@ -1,6 +1,7 @@
 from models import base
 class itchat_base_component(base.base) :
     def __init__(self):
+        super().__init__()
         pass
 
     def on_start(self):

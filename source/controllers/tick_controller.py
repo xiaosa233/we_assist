@@ -14,12 +14,14 @@ class tick_controller(base_controller.base_controller):
     def initialize(self):
         self.base_function_dispatcher = function_dispatcher.open()
         self.base_function_dispatcher[base.g_base_register_name].add(self.on_base_register)
+        self.base_function_dispatcher[base.g_base_tickable_name].add(self.on_base_register)
         self.base_function_dispatcher[base.g_base_destroy_name].add(self.on_base_destroy)
 
 
     def destroy(self):
         if self.base_function_dispatcher is not None :
             self.base_function_dispatcher[base.g_base_register_name].remove(self.on_base_register)
+            self.base_function_dispatcher[base.g_base_tickable_name].add(self.on_base_register)
             self.base_function_dispatcher[base.g_base_destroy_name].remove(self.on_base_destroy)
             function_dispatcher.close(self.base_function_dispatcher.name)
 
@@ -27,11 +29,11 @@ class tick_controller(base_controller.base_controller):
     def on_base_register(self, base_obj):
         self.pending_mutex.acquire()
         if base_obj not in self.tick_objs :
-            if base_obj.is_tick and base_obj not in self.pending_add_objs:
+            if base_obj.get_is_tick() and base_obj not in self.pending_add_objs:
                 #add in
                 self.pending_add_objs.append(base_obj)
         else :
-            if not base_obj.is_tick and base_obj not in self.pending_kill_idx:
+            if not base_obj.get_is_tick() and base_obj not in self.pending_kill_idx:
                 #remove
                 idx = self.tick_objs.index(base_obj)
                 self.pending_kill_idx.append(idx)

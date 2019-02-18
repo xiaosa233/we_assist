@@ -48,7 +48,7 @@ class itchat_cache_component(itchat_base_component.itchat_base_component) :
                                                                                    info_it['Signature'])
             else:
                 now_it = self.v_friend_infos[info_it['UserName']]
-                response_name = self.get_friendly_name(info_it)
+                response_name = self.outer.get_friendly_name(info_it)
 
                 if now_it.monitor_nickname.set_value(info_it['NickName']):
                     tmp_msg = response_name + ' 修改了昵称 : ' + now_it.monitor_nickname.get_last_value() + " --> " + now_it.monitor_nickname.get_value()

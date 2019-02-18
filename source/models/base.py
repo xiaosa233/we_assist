@@ -3,6 +3,7 @@ from utils.function_dispatcher import *
 class base :
     g_base_register_name = 'base_register'
     g_base_destroy_name = 'base_destroy'
+    g_base_tickable_name = 'base_tickable'
     g_function_dispatcher = None
     def __init__(self):
         self.__is_tick = True
@@ -13,6 +14,9 @@ class base :
     def register(self):
         base.g_function_dispatcher[base.g_base_register_name](self)
 
+    def notify_tickable(self):
+        base.g_function_dispatcher[base.g_base_tickable_name](self)
+
     def destroy(self):
         base.g_function_dispatcher[base.g_base_destroy_name](self)
 
@@ -20,11 +24,10 @@ class base :
     def tick(self, delta_time):
         pass
 
-    @property
-    def is_tick(self):
+    def get_is_tick(self):
         return self.__is_tick
-    @is_tick.setter
-    def is_tick(self, in_tick):
+
+    def set_is_tick(self, in_tick):
         self.__is_tick = in_tick
 
     @property
