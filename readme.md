@@ -42,4 +42,4 @@ Email：li.xiaojian233@qq.com
 
 ------
 ## Todo
-2、弄清楚为什么会有username 记录下来
+1、添加头像监控的功能
