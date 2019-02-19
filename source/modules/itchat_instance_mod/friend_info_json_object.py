@@ -7,7 +7,6 @@ class friend_info_json_object(json_object.json_object):
         self.key_func = key_func
 
 
-
     def value_to_json(self, value):
         json_data = {}
 
@@ -20,13 +19,15 @@ class friend_info_json_object(json_object.json_object):
         self.set_json_data(json_data)
 
 
-    def json_to_value(self, name_map_key):
+    def json_to_value(self, friend_infos):
         json_data = super().json_to_value()
-        result = {}
         if json_data is None :
-            return result
-        for (key, value) in json_data.items():
-            if key in name_map_key:
-                result[name_map_key[key] ] = friend_info.friend_info( name_map_key[key], value['nickname'], value['signature'])
+            return {}
+        result = {}
+        for it in friend_infos :
+            key = self.key_func(it)
+            if key in json_data :
+                json_item = json_data[key]
+                result[ it['UserName']] = friend_info.friend_info( it['UserName'], json_item['nickname'], json_item['signature'])
 
         return result

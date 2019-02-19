@@ -3,6 +3,8 @@ import tick_controller
 import input_manager
 from utils import function_dispatcher
 from models import global_accessor
+from models import json_object
+import config_controller
 
 class world_controller:
     
@@ -19,6 +21,10 @@ class world_controller:
 
     def initialize(self, sys_argv):
         #initialize all things here
+        json_test_mode = json_object.json_object.parse_with_file(config_controller.config_controller.get_save_dir() + 'world_config.json', 'test_mode')
+        if json_test_mode is not None :
+            self.set_test_mode(json_test_mode)
+
         self.input_dispatcher = function_dispatcher.function_dispatcher.open('input')
         self.input_dispatcher ['exit'].add(self.on_input_event_exit)
         self.v_tick_controller.initialize()

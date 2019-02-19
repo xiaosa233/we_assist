@@ -14,7 +14,6 @@ class itchat_cache_component(itchat_base_component.itchat_base_component) :
         self.v_itchat = outer_controller.get_itchat()
         self.v_friend_infos = {}
         self.json_friend_info = None
-        self.json_friend_map = None
 
     def on_login(self):
         # load json_data
@@ -53,11 +52,11 @@ class itchat_cache_component(itchat_base_component.itchat_base_component) :
                 if now_it.monitor_nickname.set_value(info_it['NickName']):
                     tmp_msg = response_name + ' 修改了昵称 : ' + now_it.monitor_nickname.get_last_value() + " --> " + now_it.monitor_nickname.get_value()
                     response_msg += tmp_msg + "\n"
-                    log_controller.g_log(tmp_msg)
+                    log_controller.log_controller.g_log(tmp_msg)
                 if now_it.monitor_signature.set_value(info_it['Signature']):
                     tmp_msg = response_name + ' 修改了个性签名 : ' + now_it.monitor_signature.get_last_value() + " --> " + now_it.monitor_signature.get_value()
                     response_msg += tmp_msg + "\n"
-                    log_controller.g_log(tmp_msg)
+                    log_controller.log_controller.g_log(tmp_msg)
         if response_msg != '':
             # send to filehelper
             self.udpate_data_to_json(friend_infos)
@@ -65,38 +64,13 @@ class itchat_cache_component(itchat_base_component.itchat_base_component) :
 
     def init_json_file(self):
         self.json_friend_info = friend_info_json_object.friend_info_json_object(self.outer.get_friendly_name)
-        self.json_friend_map = json_object.json_object()
-        v_json_coder = json_coder.json_coder()
-        v_json_coder.set_path(self.get_cache_json())
-        v_json_coder.parse_file()
-        self.json_friend_info.set_json_coder(v_json_coder, 'friend_infos')
-        self.json_friend_map.set_json_coder(v_json_coder, 'friendly_name_map')
-
+        self.json_friend_info.open_file( self.get_cache_json(), 'friend_infos')
         friend_infos = self.v_itchat.get_friend_infos()
-        name_map_key = self.get_friendly_name_map(friend_infos)
-
-        self.v_friend_infos = self.json_friend_info.json_to_value(name_map_key)
+        self.v_friend_infos = self.json_friend_info.json_to_value(friend_infos)
 
     def udpate_data_to_json(self, friend_infos):
-        self.json_friend_info.value_to_json(friend_infos)
-        self.json_friend_map.value_to_json(self.get_friendly_name_map(friend_infos))
-        self.json_friend_map.write_file()
+        self.json_friend_info.update_value_to_file(friend_infos)
 
-    def get_friendly_name_map(self, friend_infos):
-        # create_map
-        invalid_key = []  # if there are two same friendly name send_msgthen we ignore it
-        name_map_key = {}
-        for it in friend_infos:
-            friendly_name = self.outer.get_friendly_name(it)
-            if friendly_name in invalid_key:
-                continue
-            if friendly_name not in name_map_key:
-                name_map_key[friendly_name] = it['UserName']
-            else:
-                del name_map_key[friendly_name]
-                invalid_key.append(friendly_name)
-
-        return name_map_key
 
 
     def get_cache_json(self) :

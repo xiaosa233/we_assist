@@ -26,12 +26,4 @@ def import_source_path():
     if source_dir not in sys.path:
         sys.path.append(source_dir)
 
-    for file_it in os.listdir(source_dir) :
-        full_path_it = source_dir + "/" + file_it
-        print(full_path_it)
-        if not os.path.isfile(full_path_it) and file_it[-3:] == ".py" and file_it[:-3] != "__init__" :
-            pass
-            #__import__( module_name + "." + file_it[:-3] )
-            #file_names.append(file_it[:-3])
-
 import_source_path()
