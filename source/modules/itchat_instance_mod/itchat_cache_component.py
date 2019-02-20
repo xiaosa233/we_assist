@@ -37,7 +37,6 @@ class itchat_cache_component(itchat_base_component.itchat_base_component) :
 
     def update_friend_infos(self, update = False):
         friend_infos = self.v_itchat.get_friend_infos(update)
-        print(friend_infos)
         response_msg = ''
         for info_it in friend_infos:
             # print(info_it['UserName'], '  ', info_it['NickName'], '  ', info_it['Signature'], )
@@ -60,7 +59,7 @@ class itchat_cache_component(itchat_base_component.itchat_base_component) :
         if response_msg != '':
             # send to filehelper
             self.udpate_data_to_json(friend_infos)
-            self.v_itchat.send_msg_check(self.outer.filehelper_name, response_msg)
+            self.outer.send_msg(self.outer.filehelper_name, response_msg)
 
     def init_json_file(self):
         self.json_friend_info = friend_info_json_object.friend_info_json_object(self.outer.get_friendly_name)

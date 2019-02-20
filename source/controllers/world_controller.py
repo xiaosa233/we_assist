@@ -14,6 +14,7 @@ class world_controller:
         self.should_end = False
         self.input_dispatcher = None
         self.test_mode = False
+        self.run_frame = 40
         global_accessor.global_accessor.set_value('world', self)
 
 
@@ -52,3 +53,9 @@ class world_controller:
 
     def get_test_mode(self):
         return self.test_mode
+
+    def set_run_frame(self, in_frame):
+        self.run_frame = in_frame
+
+    def get_run_frame(self):
+        return self.run_frame

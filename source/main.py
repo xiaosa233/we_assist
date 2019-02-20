@@ -16,10 +16,12 @@ def show_cmd_helper() :
 
 def main() :
     run_frame = 40 # 10hz to run
+
     fix_delta_time = 1.0 / run_frame
 
     #initialize world controller
     v_world_controller = itchat_world_controller.itchat_world_controller()
+    v_world_controller.set_run_frame(run_frame)
     v_world_controller.initialize(sys.argv)
 
     pre_time = time.time()

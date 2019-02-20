@@ -12,11 +12,8 @@ class function_dispatcher_unit:
         self.events.remove(in_func)
 
 
-    def __call__(self, *args):
-        args_len = len(args)
-        if args_len > 6:
-            args_len = 0
-        return EventExecutor.dispatch_funcs[args_len](self.events.funcs, args)
+    def __call__(self, *args, **kwargs):
+        return self.events.broadcast(*args, **kwargs)
 
 
 class function_dispatcher :

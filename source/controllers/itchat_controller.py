@@ -10,8 +10,11 @@ import time
 import random
 import itchat_file_component
 import itchat_cache_component
+import itchat_task_component
 from models import json_object
 from models import global_accessor
+from models import task_deque
+from models import ticker
 
 class itchat_controller (base_controller.base_controller):
 
@@ -25,14 +28,17 @@ class itchat_controller (base_controller.base_controller):
         self.save_data_json = json_coder.json_coder()
         self.save_data_json.set_path( self.get_save_data_dir() + "objects/itchat_controller.json" )
         self.is_logging = False
+        self.ticker = ticker.ticker(3.0)
 
         self.update_head_img_index = 0 # use for switch path when get head imgs
 
         self.components = []
         self.cache_component = None
+        self.task_component = None
         
 # public ------------
     def start(self) :
+        super().register()
         world = global_accessor.global_accessor.get_safe('world')
         is_test = False
         if world is not None :
@@ -56,7 +62,9 @@ class itchat_controller (base_controller.base_controller):
 
         self.components.append( itchat_file_component.itchat_file_component(self))
         self.cache_component = itchat_cache_component.itchat_cache_component(self)
+        self.task_component = itchat_task_component.itchat_task_component(self)
         self.components.append( self.cache_component)
+        self.components.append( self.task_component)
 
 
         self.v_itchat.login_and_run(self.get_save_data_dir() + self.v_itchat.get_instance_name() + '/')
@@ -74,12 +82,22 @@ class itchat_controller (base_controller.base_controller):
         return self.v_itchat
 
 
+    def tick(self, delta_time):
+        if self.is_logging and self.ticker.tick(delta_time):
+            self.update_friend_infos()
+
+
     def update_friend_infos(self) :
         if not self.is_logging:
             return
 
         if self.cache_component is not None :
             self.cache_component.update_friend_infos(True)
+
+    def send_msg(self, username, msg):
+        if self.task_component :
+            self.task_component.add_task( task_deque.task_unit(self.v_itchat.send_msg_check, username, msg) )
+
 
     def update_friend_head_imgs(self) :
 
