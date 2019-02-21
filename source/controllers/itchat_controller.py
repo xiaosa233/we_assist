@@ -84,6 +84,7 @@ class itchat_controller (base_controller.base_controller):
 
     def tick(self, delta_time):
         if self.is_logging and self.ticker.tick(delta_time):
+            print(time.time(), 'update friend infos')
             self.update_friend_infos()
 
 
