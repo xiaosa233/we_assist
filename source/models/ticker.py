@@ -8,6 +8,7 @@ class ticker:
         result = False
         self.total_time += delta_time
         self.frame_time += delta_time
+
         if self.frame_time > self.tick_time :
             result = True
             float_count = self.frame_time / self.tick_time

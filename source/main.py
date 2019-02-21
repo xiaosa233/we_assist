@@ -30,7 +30,6 @@ def main() :
 
 
     while True :
-
         v_world_controller.update(delta_time)
         if v_world_controller.is_end() :
             break
@@ -40,10 +39,12 @@ def main() :
         pre_time = now_time
 
         if delta_time < fix_delta_time:
-            #print('sleep : ', fix_delta_time - delta_time)
             time.sleep(fix_delta_time - delta_time)
-            delta_time = delta_time + time.time() - pre_time
+            tmp = time.time()
+            delta_time = delta_time + tmp - pre_time
+            pre_time = tmp
 
     v_world_controller.destroy()
+
 
 main()
