@@ -11,6 +11,7 @@ import random
 import itchat_file_component
 import itchat_cache_component
 import itchat_task_component
+import itchat_head_component
 from models import json_object
 from models import global_accessor
 from models import task_deque
@@ -65,6 +66,7 @@ class itchat_controller (base_controller.base_controller):
         self.task_component = itchat_task_component.itchat_task_component(self)
         self.components.append( self.cache_component)
         self.components.append( self.task_component)
+        self.components.append( itchat_head_component.itchat_head_component(self) )
 
 
         self.v_itchat.login_and_run(self.get_save_data_dir() + self.v_itchat.get_instance_name() + '/')
@@ -72,7 +74,10 @@ class itchat_controller (base_controller.base_controller):
             it.on_start()
 
     def close(self) :
-        #self.write_json_file()
+        msg = self.v_itchat.instance_name + " logout"
+        log_controller.g_log(msg)
+        self.send_msg(self.filehelper_name, msg)
+
         for it in self.components:
             it.on_close()
         self.v_itchat.logout()
@@ -99,6 +104,15 @@ class itchat_controller (base_controller.base_controller):
         if self.task_component :
             self.task_component.add_task( task_deque.task_unit(self.v_itchat.send_msg_check, username, msg) )
 
+    def get_is_logging(self):
+        return self.is_logging
+
+    def get_component(self, component_name):
+
+        for it in self.components :
+            if type(it).__name__ == component_name :
+                return it
+        return None
 
     def update_friend_head_imgs(self) :
 
@@ -169,6 +183,8 @@ class itchat_controller (base_controller.base_controller):
         log_controller.g_log(msg)
         self.is_logging = True
 
+        self.send_msg(self.filehelper_name, msg)
+
         for it in self.components:
             it.on_login()
         return
@@ -216,9 +232,6 @@ class itchat_controller (base_controller.base_controller):
 
 
     def on_logout(self, in_itchat_instance) :
-        msg = self.v_itchat.instance_name + " logout"
-        log_controller.g_log(msg)
-
         for it in self.components:
             it.on_logout()
          
