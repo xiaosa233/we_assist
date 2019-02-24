@@ -43,3 +43,4 @@ Email：li.xiaojian233@qq.com
 ------
 ## Todo
 1、添加头像监控的功能
+2、解决logout 后不能自动退出的问题

@@ -4,6 +4,8 @@ import time
 import random
 import os
 from utils import function_dispatcher
+from controllers import config_controller
+import shutil
 
 '''
 this class on use for debug and test
@@ -50,27 +52,40 @@ class offline_itchat_instance:
         if self.on_logout_callback :
             self.on_logout_callback(self)
 
-    def send_msg(self, to_username, msg):
-        print('offline_itchat send msg : ', to_username, msg)
+    def send_msg(self, msg, to_username):
+        print('offline_itchat send msg ,user_name : ', to_username, 'msg : ', msg)
 
-    def send_msg_check(self, to_username, msg) :
+    def send_msg_check(self, msg, to_username) :
         max_words = 800
         if(len(msg) <= max_words) :
-            self.send_msg(to_username, msg)
+            self.send_msg(msg, to_username)
         else :
             msg_len = len(msg)
             while( msg_len > 0) :
                 tosend_msg = msg[: max_words if msg_len >= max_words else msg_len]
-                self.send_msg(to_username, tosend_msg)
+                self.send_msg(tosend_msg, to_username)
                 time.sleep(random.random() * 2 + 1) # 防封号
                 msg = msg[max_words if msg_len >= max_words else msg_len:]
                 msg_len = len(msg)
 
-    def send_img(self, to_username, pic_dir) :
+    def send_img(self, pic_dir, to_username) :
         print('offline_itchat send img : ', to_username, pic_dir)
 
-    def get_head_img(self, user_name, pic_dir) :
-        print('offline_itchat get head img : ', user_name, pic_dir)
+    def get_head_img(self, pic_path, user_name) :
+        test_dir = self.get_test_dir() + self.get_itchat_name() + '/head_imgs/'
+        result = os.listdir(test_dir)
+        dir_len = len(result)
+        target_file = test_dir + result[random.randint(0, dir_len-1)]
+
+        #copy file
+        pic_dir = os.path.dirname(pic_path)
+        if not os.path.exists(pic_dir ) :
+            os.mkdir(pic_dir)
+        shutil.copy(target_file, pic_path)
+
+    def get_test_dir(self):
+        return config_controller.config_controller.get_project_dir() + 'test_dir/'
+
 
     def get_friend_infos(self, update = False):
         result = self.func_dispatcher['get_friend_infos'](self)

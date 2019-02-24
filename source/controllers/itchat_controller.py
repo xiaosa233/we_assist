@@ -12,10 +12,12 @@ import itchat_file_component
 import itchat_cache_component
 import itchat_task_component
 import itchat_head_component
+import itchat_upload_component
 from models import json_object
 from models import global_accessor
 from models import task_deque
 from models import ticker
+from utils import function_dispatcher
 
 class itchat_controller (base_controller.base_controller):
 
@@ -24,18 +26,17 @@ class itchat_controller (base_controller.base_controller):
     def __init__(self) :
         super().__init__()
         self.v_itchat = None
-
-        self.v_friend_infos = {} # map , user_name to friend_info
         self.save_data_json = json_coder.json_coder()
         self.save_data_json.set_path( self.get_save_data_dir() + "objects/itchat_controller.json" )
         self.is_logging = False
-        self.ticker = ticker.ticker(3.0)
-
+        self.friend_info_ticker = ticker.ticker(60.0)
+        self.head_ticker = ticker.ticker(60 * 10.0)
         self.update_head_img_index = 0 # use for switch path when get head imgs
-
         self.components = []
         self.cache_component = None
         self.task_component = None
+        self.head_component = None
+        self.upload_component = None
         
 # public ------------
     def start(self) :
@@ -44,6 +45,9 @@ class itchat_controller (base_controller.base_controller):
         is_test = False
         if world is not None :
             is_test = world.get_test_mode()
+
+        self.function_dispatcher = function_dispatcher.function_dispatcher.open('input')
+        self.function_dispatcher['test'].add(self.on_test)
 
         if not is_test :
             self.v_itchat = itchat_instance.itchat_instance(self.get_default_login_name())
@@ -66,7 +70,10 @@ class itchat_controller (base_controller.base_controller):
         self.task_component = itchat_task_component.itchat_task_component(self)
         self.components.append( self.cache_component)
         self.components.append( self.task_component)
-        self.components.append( itchat_head_component.itchat_head_component(self) )
+        self.head_component =  itchat_head_component.itchat_head_component(self)
+        self.components.append(  self.head_component )
+        self.upload_component = itchat_upload_component.itchat_upload_component(self)
+        self.components.append(  self.upload_component )
 
 
         self.v_itchat.login_and_run(self.get_save_data_dir() + self.v_itchat.get_instance_name() + '/')
@@ -76,7 +83,7 @@ class itchat_controller (base_controller.base_controller):
     def close(self) :
         msg = self.v_itchat.instance_name + " logout"
         log_controller.g_log(msg)
-        self.send_msg(self.filehelper_name, msg)
+        self.send_msg(msg)
 
         for it in self.components:
             it.on_close()
@@ -88,9 +95,16 @@ class itchat_controller (base_controller.base_controller):
 
 
     def tick(self, delta_time):
-        if self.is_logging and self.ticker.tick(delta_time):
-            print('time : ', time.time(), 'update friend info')
-            self.update_friend_infos()
+        if self.is_logging :
+            if self.friend_info_ticker.tick(delta_time):
+                print('time : ', time.time(), 'update friend info')
+                self.update_friend_infos()
+            if self.head_ticker.tick(delta_time):
+                print('time : ', time.time() ,'update head imgs')
+                self.update_head_image()
+
+    def on_test(self):
+        pass
 
 
     def update_friend_infos(self) :
@@ -100,9 +114,33 @@ class itchat_controller (base_controller.base_controller):
         if self.cache_component is not None :
             self.cache_component.update_friend_infos(True)
 
-    def send_msg(self, username, msg):
+    def update_head_image(self):
+        if not self.is_logging:
+            return
+        if self.head_component:
+            self.head_component.update_head_image()
+
+    def send_msg(self, msg, username = None):
+        if username is None :
+            username = self.filehelper_name
         if self.task_component :
-            self.task_component.add_task( task_deque.task_unit(self.v_itchat.send_msg_check, username, msg) )
+            self.task_component.add_task( task_deque.task_unit(self.send_msg_impl, msg, username) )
+
+    def send_msg_impl(self, msg, username):
+        self.v_itchat.send_msg_check(msg, username)
+
+
+    def send_image_impl(self, img_path, username = None):
+        if username is None :
+            username = self.filehelper_name
+
+        final_path = img_path
+        if self.upload_component:
+            final_path = self.upload_component.request_send(img_path)
+
+        self.v_itchat.send_img( final_path, username)
+
+
 
     def get_is_logging(self):
         return self.is_logging
@@ -114,26 +152,6 @@ class itchat_controller (base_controller.base_controller):
                 return it
         return None
 
-    def update_friend_head_imgs(self) :
-
-        friend_infos = self.v_itchat.instance.get_friends(update=False)
-        last_index = self.update_head_img_index
-        self.update_head_img_index = 1 - last_index
-        for item in friend_infos :
-            img_a = self.get_head_img_path(str(self.update_head_img_index), item)
-            self.v_itchat.get_head_img(item['UserName'], img_a)
-            img_b = self.get_head_img_path(str(last_index), item)
-
-            #check if img size is different
-            if func_library.is_img_size_different(img_a, img_b) :
-                msg = self.get_friendly_name(item) + ' 修改了头像 ，即将给你发送修改前和修改后的头像'
-                log_controller.g_log(msg)
-                self.v_itchat.send_msg(itchat_controller.filehelper_name, msg)
-                self.v_itchat.send_img(itchat_controller.filehelper_name, img_b)
-                self.v_itchat.send_img(itchat_controller.filehelper_name, img_a)
-        
-
-
 
 
 
@@ -144,91 +162,23 @@ class itchat_controller (base_controller.base_controller):
             response_name = wechat_friend_infos_item['NickName']
         return response_name
 
-    def get_head_img_path(self, middle_dir_name, wechat_friend_infos_item) :
-        file_name = wechat_friend_infos_item['UserName']
-        return self.get_save_data_dir() + "head_imgs/" + middle_dir_name + "/" + file_name +".png"
-
-    def on_receive_all_signature(self) :
-        friend_infos = self.v_itchat.instance.get_friends(update=True)
-        response_msg = ''
-        for info_it in friend_infos :
-            response_name = info_it['RemarkName']
-            if response_name == '':
-                response_name = info_it['NickName']
-
-            response_msg += response_name + ' : ' + info_it['Signature'] + '\n'
-        
-        return response_msg
-            
-
-            
 
     def on_receive(self, in_itchat_instance, msg) :
-        if msg['ToUserName'] == itchat_controller.filehelper_name :
-            reply = ''
-            if msg['Content'] == '帮助' :
-                reply = self.show_helper()
-            elif msg['Content'] == '1' :
-                # get all signature
-                reply = self.on_receive_all_signature()
-
-            if reply != '':
-                self.v_itchat.send_msg_check(itchat_controller.filehelper_name, reply)
-
-
+        pass
 
     def on_login(self, in_itchat_instance) :
 
-        msg = self.v_itchat.get_itchat_name() + " login"
+        msg = 'we_assist loging : ' + self.v_itchat.get_itchat_name()
         log_controller.g_log(msg)
         self.is_logging = True
 
-        self.send_msg(self.filehelper_name, msg)
+        self.send_msg(msg)
 
         for it in self.components:
             it.on_login()
         return
         #check friend imgs
         self.check_friend_head_imgs()
-
-    def check_friend_head_imgs(self) :
-        if 'friendly_name_map' not in self.save_data_json.json_data :
-            return 
-
-        friendly_name_map = self.save_data_json.json_data['friendly_name_map']
-        friend_infos = self.v_itchat.instance.get_friends(update=False)
-        last_index = self.update_head_img_index
-        self.update_head_img_index = 1 - self.update_head_img_index
-        for item in friend_infos :
-            friendly_name = self.get_friendly_name(item)
-            if(friendly_name not in friendly_name_map) :
-                continue 
-
-            img_a = self.get_head_img_path(str(self.update_head_img_index), item)
-            self.v_itchat.get_head_img(item['UserName'], img_a)
-            img_b = self.get_head_img_path(str(last_index), item)
-            #replace img_b
-            img_b = os.path.dirname(img_b) + '/' + friendly_name_map[friendly_name] + '.png'
-
-            #check if img size is different
-            if func_library.is_img_size_different(img_a, img_b) :
-                msg = friendly_name + ' 修改了头像 ，即将给你发送修改前和修改后的头像'
-                log_controller.g_log(msg)
-                self.v_itchat.send_msg(itchat_controller.filehelper_name, msg)
-                self.v_itchat.send_img(itchat_controller.filehelper_name, img_b)
-                self.v_itchat.send_img(itchat_controller.filehelper_name, img_a)
-
-    def get_all_friend_head_imgs(self) :
-        
-        friend_infos = self.v_itchat.instance.get_friends(update=False)
-        for item in friend_infos :
-            img_path = self.get_head_img_path('all_head_imgs', item)
-            img_path = os.path.dirname(img_path) + '/' + func_library.get_windows_valid_path(self.get_friendly_name(item)) + '.png'
-            self.v_itchat.get_head_img(item['UserName'], img_path)
-
-            msg = self.get_friendly_name(item) + ' 的头像：'
-            log_controller.g_log(msg + img_path)
-            time.sleep(random.random() )
 
 
     def on_logout(self, in_itchat_instance) :

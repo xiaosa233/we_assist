@@ -8,3 +8,5 @@ save/
 /*.sln
 /*.pyproj
 /source/QR.png
+test_dir/
+/source/test/offline_itchat_run.py

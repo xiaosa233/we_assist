@@ -64,35 +64,35 @@ class itchat_instance:
         if self.on_logout_callback :
             self.on_logout_callback(self)
 
-    def send_msg(self, toUserName, msg):
+    def send_msg(self, msg, toUserName):
         try:
             self.instance.send(msg=msg, toUserName=toUserName)
         except Exception as e:
             print(e)
 
-    def send_msg_check(self, to_username, msg) :
+    def send_msg_check(self, msg, to_username) :
         max_words = 800
         if(len(msg) <= max_words) :
-            self.send_msg(to_username, msg)
+            self.send_msg(msg, to_username)
         else :
             msg_len = len(msg)
             while( msg_len > 0) :
                 tosend_msg = msg[: max_words if msg_len >= max_words else msg_len]
-                self.send_msg(to_username, tosend_msg)
+                self.send_msg(tosend_msg, to_username)
                 time.sleep(random.random() * 2 + 1) # 防封号
                 msg = msg[max_words if msg_len >= max_words else msg_len:]
                 msg_len = len(msg)
 
-    def send_img(self, to_username, pic_dir) :
+    def send_img(self, pic_dir, to_username) :
         try :
             self.instance.send_image(pic_dir, to_username)
         except Exception as e :
             print(e)
 
-    def get_head_img(self,user_name, pic_dir) :
-        itchat_instance.mkdir(os.path.dirname(pic_dir))
+    def get_head_img(self,pic_path, user_name) :
+        itchat_instance.mkdir(os.path.dirname(pic_path))
         try :
-            self.instance.get_head_img(userName = user_name, picDir = pic_dir)
+            self.instance.get_head_img(userName = user_name, picDir = pic_path)
             return True 
         except Exception as e :
             print(e)
