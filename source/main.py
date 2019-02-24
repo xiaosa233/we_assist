@@ -43,8 +43,6 @@ def main() :
             tmp = time.time()
             delta_time = delta_time + tmp - pre_time
             pre_time = tmp
-        else :
-            print('out time : ' , delta_time)
 
     v_world_controller.destroy()
 
