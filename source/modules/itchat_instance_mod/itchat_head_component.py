@@ -40,10 +40,11 @@ class itchat_head_component(itchat_base_component.itchat_base_component) :
     def update_head_image(self):
         log_controller.log_controller.g_log('begin to update head imgs ')
         friend_infos = self.v_itchat.get_friend_infos()
+        self.change_index()
         for item in friend_infos :
             self.add_task(task_deque.task_unit( self.update_head_image_impl, item, self.last_head_index))
         self.add_task(self.on_after_update_head)
-        self.change_index()
+
 
 
     def read_last_imgs(self):
@@ -74,9 +75,6 @@ class itchat_head_component(itchat_base_component.itchat_base_component) :
 
         for it in to_remove_key :
             os.remove( last_dir + it)
-
-        self.change_index()
-
         # remove now imgs
         now_dir = self.get_head_dir( self.last_head_index)
         if path.exists(now_dir) :
