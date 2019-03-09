@@ -38,9 +38,11 @@ class itchat_head_component(itchat_base_component.itchat_base_component) :
 
 
     def update_head_image(self):
+        log_controller.log_controller.g_log('begin to update head imgs ')
         friend_infos = self.v_itchat.get_friend_infos()
         for item in friend_infos :
             self.add_task(task_deque.task_unit( self.update_head_image_impl, item, self.last_head_index))
+        self.add_task(self.on_after_update_head)
         self.change_index()
 
 
@@ -79,6 +81,9 @@ class itchat_head_component(itchat_base_component.itchat_base_component) :
         now_dir = self.get_head_dir( self.last_head_index)
         if path.exists(now_dir) :
             shutil.rmtree(now_dir)
+
+    def on_after_update_head(self):
+        log_controller.log_controller.g_log('end update head imgs')
 
 
     # diff img, it should run in main thread

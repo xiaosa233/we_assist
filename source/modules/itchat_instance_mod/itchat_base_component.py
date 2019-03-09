@@ -10,7 +10,7 @@ class itchat_base_component(base.base) :
     def on_close(self):
         pass
 
-    def on_receive(self):
+    def on_receive(self, msg):
         pass
 
 

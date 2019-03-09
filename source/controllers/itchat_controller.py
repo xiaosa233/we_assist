@@ -13,6 +13,7 @@ import itchat_cache_component
 import itchat_task_component
 import itchat_head_component
 import itchat_upload_component
+import itchat_input_component
 from models import json_object
 from models import global_accessor
 from models import task_deque
@@ -74,6 +75,7 @@ class itchat_controller (base_controller.base_controller):
         self.components.append(  self.head_component )
         self.upload_component = itchat_upload_component.itchat_upload_component(self)
         self.components.append(  self.upload_component )
+        self.components.append( itchat_input_component.itchat_input_component(self))
 
 
         self.v_itchat.login_and_run(self.get_save_data_dir() + self.v_itchat.get_instance_name() + '/')
@@ -164,7 +166,8 @@ class itchat_controller (base_controller.base_controller):
 
 
     def on_receive(self, in_itchat_instance, msg) :
-        pass
+        for it in self.components :
+            it.on_receive(msg)
 
     def on_login(self, in_itchat_instance) :
 
