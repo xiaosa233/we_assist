@@ -19,7 +19,7 @@ class img_handler :
                 return False
             try :
                 if path.getsize(img_path_a) != path.getsize(img_path_b) :
-                    return False
+                    return True
 
                 img_a = Image.open(img_path_a)
                 img_b = Image.open(img_path_b)
