@@ -13,12 +13,18 @@ class img_handler :
 
 
     @staticmethod
+    def get_file_size_in_kb(path_a):
+        a_size = path.getsize(path_a)
+        return int(a_size / 1024.0)
+
+
+    @staticmethod
     def is_img_different(img_path_a, img_path_b) :
         if path.exists(img_path_a) and path.exists(img_path_b) :
             if img_path_a == img_path_b :
                 return False
             try :
-                if path.getsize(img_path_a) != path.getsize(img_path_b) :
+                if img_handler.get_file_size_in_kb(img_path_a) != img_handler.get_file_size_in_kb(img_path_b) :
                     return True
 
                 img_a = Image.open(img_path_a)

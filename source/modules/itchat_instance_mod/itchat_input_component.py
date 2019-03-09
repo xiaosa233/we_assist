@@ -12,6 +12,8 @@ class itchat_input_component(itchat_base_component.itchat_base_component) :
             elif msg['Text'] == '1' or msg['Text'] == '个性签名' :
                 self.get_all_signature()
 
+
+
     def get_all_signature(self):
         friend_infos = self.v_itchat.get_friend_infos()
         msg = ''

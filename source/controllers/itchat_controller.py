@@ -85,7 +85,8 @@ class itchat_controller (base_controller.base_controller):
     def close(self) :
         msg = self.v_itchat.instance_name + " logout"
         log_controller.g_log(msg)
-        self.send_msg(msg)
+        self.v_itchat.send_msg(msg, self.filehelper_name)
+
 
         for it in self.components:
             it.on_close()
