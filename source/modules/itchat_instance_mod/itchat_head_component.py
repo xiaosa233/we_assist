@@ -75,8 +75,10 @@ class itchat_head_component(itchat_base_component.itchat_base_component) :
 
         for it in to_remove_key :
             os.remove( last_dir + it)
+
+        next_index = 1- self.last_head_index
         # remove now imgs
-        now_dir = self.get_head_dir( self.last_head_index)
+        now_dir = self.get_head_dir( next_index)
         if path.exists(now_dir) :
             shutil.rmtree(now_dir)
 
