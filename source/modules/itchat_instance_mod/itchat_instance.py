@@ -107,6 +107,12 @@ class itchat_instance:
     def get_instance_name(self):
         return self.instance_name
 
+    def search_friends(self, userName):
+        return self.instance.search_friends(userName=userName)
+
+    def search_chatrooms(self, userName):
+        return self.instance.search_chatrooms(userName=userName)
+
     @staticmethod
     def itchat_run(value_itchat_instance, storage_dir):
 
@@ -119,7 +125,10 @@ class itchat_instance:
         value_itchat_instance.instance.auto_login(enableCmdQR=False, hotReload=True, statusStorageDir=storage_path,
                                  loginCallback=value_itchat_instance.login_callback, exitCallback=value_itchat_instance.logout_callback)
 
-        @value_itchat_instance.instance.msg_register(itchat.content.TEXT)
+        @value_itchat_instance.instance.msg_register([itchat.content.TEXT, itchat.content.MAP,
+                                                      itchat.content.CARD, itchat.content.NOTE, itchat.content.SHARING,
+                                                      itchat.content.PICTURE, itchat.content.RECORDING, itchat.content.ATTACHMENT,
+                                                      itchat.content.VIDEO],isFriendChat=True, isGroupChat=True, isMpChat=True)
         def receive(msg):
             if value_itchat_instance.on_receive_callback :
                 return value_itchat_instance.on_receive_callback(value_itchat_instance, msg)
