@@ -130,6 +130,18 @@ class itchat_controller (base_controller.base_controller):
         if self.task_component :
             self.task_component.add_task( task_deque.task_unit(self.send_msg_impl, msg, username) )
 
+    def send_file(self, msg, username=None):
+        if username is None:
+            username = self.filehelper_name
+        if self.task_component:
+            self.task_component.add_task(task_deque.task_unit(self.send_file_impl, msg, username))
+
+    def send_image(self, msg, username=None):
+        if username is None:
+            username = self.filehelper_name
+        if self.task_component:
+            self.task_component.add_task(task_deque.task_unit(self.send_image_impl, msg, username))
+
     def send_msg_impl(self, msg, username):
         self.v_itchat.send_msg_check(msg, username)
 
@@ -143,6 +155,17 @@ class itchat_controller (base_controller.base_controller):
             final_path = self.upload_component.request_send(img_path)
 
         self.v_itchat.send_img( final_path, username)
+
+    def send_file_impl(self, file_path, username = None):
+        if username is None :
+            username = self.filehelper_name
+
+        final_path = file_path
+        if self.upload_component:
+            final_path = self.upload_component.request_send(file_path)
+
+        self.v_itchat.send_file( final_path, username)
+
 
 
 
@@ -168,13 +191,7 @@ class itchat_controller (base_controller.base_controller):
 
 
     def on_receive(self, in_itchat_instance, msg) :
-        if self.task_component :
-            self.task_component.add_task( task_deque.task_unit(self.on_receive_impl, in_itchat_instance, msg) )
-        else :
-            self.on_receive_impl(in_itchat_instance, msg)
-
-    def on_receive_impl(self, in_itchat_instance, msg):
-        for it in self.components :
+        for it in self.components:
             it.on_receive(msg)
 
     def on_login(self, in_itchat_instance) :

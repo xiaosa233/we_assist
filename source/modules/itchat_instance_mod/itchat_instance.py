@@ -89,6 +89,12 @@ class itchat_instance:
         except Exception as e :
             print(e)
 
+    def send_file(self, file_dir, to_username):
+        try:
+            self.instance.send_file(file_dir, to_username)
+        except Exception as e:
+            print(e)
+
     def get_head_img(self,pic_path, user_name) :
         itchat_instance.mkdir(os.path.dirname(pic_path))
         try :
