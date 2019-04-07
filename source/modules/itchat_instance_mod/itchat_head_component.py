@@ -42,7 +42,7 @@ class itchat_head_component(itchat_base_component.itchat_base_component) :
         friend_infos = self.v_itchat.get_friend_infos()
         self.change_index()
         for item in friend_infos :
-            self.add_task(task_deque.task_unit( self.update_head_image_impl, item, self.last_head_index))
+            self.add_task( self.update_head_image_impl, item, self.last_head_index)
         self.add_task(self.on_after_update_head)
 
 
@@ -103,9 +103,9 @@ class itchat_head_component(itchat_base_component.itchat_base_component) :
                 self.outer.send_image_impl(now_it.get_last_value().get_src_path())
                 self.outer.send_image_impl(now_it.get_value().get_src_path())
 
-    def add_task(self, in_task):
+    def add_task(self, in_task, *args, **kwargs):
         if self.task_component :
-            self.task_component.add_task(in_task)
+            self.task_component.add_task(in_task, *args, **kwargs)
         else :
             in_task()
 

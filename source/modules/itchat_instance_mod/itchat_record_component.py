@@ -3,8 +3,8 @@ import collections
 import re
 import record_object
 from log_controller import log_controller
-from models import task_deque
 import time
+from models.global_accessor import global_accessor
 
 import shutil
 
@@ -36,12 +36,12 @@ class itchat_record_component (itchat_base_component.itchat_base_component) :
         self.my_user_name = friend_infos[0]['UserName']
 
     def on_receive(self, msg):
-        print(msg)
+        #print(msg)
         if msg['ToUserName'] != self.my_user_name:
             return
 
         if self.task_component :
-            self.task_component.add_task(task_deque.task_unit(self.on_receive_impl, msg))
+            self.task_component.add_task(self.on_receive_impl, msg)
         else :
             log_controller.g_log('warning: in itchat_record_component, itchat_task_component is None')
 
@@ -81,15 +81,22 @@ class itchat_record_component (itchat_base_component.itchat_base_component) :
                 log_controller.g_log(revoke_msg)
                 self.outer.send_msg(revoke_msg)
             else :
-                record_object.asyn_revoke(self.outer, self.on_revoke_file_downloaded)
+                async_task_controller = global_accessor.get_safe('async_controller')
+                async_task = None
+                if async_task_controller :
+                    async_task = async_task_controller.get_async_task()
+
+                if async_task :
+                    async_task.add(record_object.asyn_revoke, self.outer, self.on_revoke_file_downloaded)
+                else :
+                    record_object.asyn_revoke( self.outer, self.on_revoke_file_downloaded)
 
     def on_revoke_file_downloaded(self, revoke_msg, file_path, is_picture):
         log_controller.g_log(revoke_msg)
-        self.outer.send_msg(revoke_msg)
-
         if not os.path.exists(file_path) :
             return
 
+        self.outer.send_msg(revoke_msg)
         if is_picture :
             self.outer.send_image(file_path)
         else :

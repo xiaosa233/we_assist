@@ -36,6 +36,14 @@ class function_dispatcher :
         return result
 
     @staticmethod
+    def weak_open(name='default'):
+        if name in function_dispatcher.g_dispatcher_map :
+            return function_dispatcher.g_dispatcher_map[name]
+        else :
+            #warning ,should not call here
+            return function_dispatcher(name)
+
+    @staticmethod
     def close(name) :
         if name in function_dispatcher.g_dispatcher_map:
             result = function_dispatcher.g_dispatcher_map[name]

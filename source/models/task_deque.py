@@ -1,6 +1,6 @@
 import threading
 import collections
-
+import time
 
 
 class task_unit:
@@ -21,13 +21,10 @@ class task_deque :
         self.mutex = threading.Lock()
 
 
-    def push(self, in_task):
+    def push(self, in_task, *args, **kwargs):
         self.mutex.acquire()
-        self.deque.append(in_task)
+        self.deque.append(task_unit(in_task, *args, **kwargs) )
         self.mutex.release()
-
-    def push_with_param(self, *args, **kwargs):
-        self.push( task_unit(*args, **kwargs))
 
     #run top task
     #return [is_empty , result]
@@ -42,3 +39,43 @@ class task_deque :
             return (True, result)
         else :
             return (False, None)
+
+
+class async_task :
+    def __init__(self):
+        self.task_deque = task_deque()
+        self.run_thread = None
+        self.is_end = False
+        self.is_clear = False
+
+    def start(self):
+        if self.run_thread is None :
+            self.is_end = False
+            self.is_clear = False
+            self.run_thread = threading.Thread(target=self.run)
+            self.run_thread.start()
+
+
+    def stop(self, join_second = -1):
+        join_param = join_second if join_second >= 0 else 99999
+        self.is_clear = join_param > 0
+        self.is_end = True
+        if self.run_thread :
+            join_param = join_second if join_second >= 0 else 99999
+            self.run_thread.join(join_param)
+
+        self.run_thread = None
+
+    def run(self):
+        next_sleep = 1.0
+        while not self.is_end:
+            #print('hwllo')
+            next_sleep = 0.0 if self.task_deque.run_top()[0] else 1.0
+            time.sleep(next_sleep)
+
+        if self.is_clear :
+            while self.task_deque.run_top()[0] :
+                pass
+
+    def add(self, func, *args, **kwargs):
+        self.task_deque.push(func, *args, **kwargs)

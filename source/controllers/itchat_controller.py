@@ -49,7 +49,6 @@ class itchat_controller (base_controller.base_controller):
             is_test = world.get_test_mode()
 
         self.function_dispatcher = function_dispatcher.function_dispatcher.open('input')
-        self.function_dispatcher['test'].add(self.on_test)
 
         if not is_test :
             self.v_itchat = itchat_instance.itchat_instance(self.get_default_login_name())
@@ -108,10 +107,6 @@ class itchat_controller (base_controller.base_controller):
                 print('time : ', time.time() ,'update head imgs')
                 self.update_head_image()
 
-    def on_test(self):
-        pass
-
-
     def update_friend_infos(self) :
         if not self.is_logging:
             return
@@ -128,19 +123,19 @@ class itchat_controller (base_controller.base_controller):
         if username is None :
             username = self.filehelper_name
         if self.task_component :
-            self.task_component.add_task( task_deque.task_unit(self.send_msg_impl, msg, username) )
+            self.task_component.add_task( self.send_msg_impl, msg, username)
 
     def send_file(self, msg, username=None):
         if username is None:
             username = self.filehelper_name
         if self.task_component:
-            self.task_component.add_task(task_deque.task_unit(self.send_file_impl, msg, username))
+            self.task_component.add_task(self.send_file_impl, msg, username)
 
     def send_image(self, msg, username=None):
         if username is None:
             username = self.filehelper_name
         if self.task_component:
-            self.task_component.add_task(task_deque.task_unit(self.send_image_impl, msg, username))
+            self.task_component.add_task(self.send_image_impl, msg, username)
 
     def send_msg_impl(self, msg, username):
         self.v_itchat.send_msg_check(msg, username)

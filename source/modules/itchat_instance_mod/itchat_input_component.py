@@ -1,4 +1,7 @@
 import itchat_base_component
+from utils.function_dispatcher import function_dispatcher
+from controllers.log_controller import log_controller
+from utils.func_library import func_library
 class itchat_input_component(itchat_base_component.itchat_base_component) :
     def __init__(self, outer):
         super().__init__()
@@ -11,8 +14,6 @@ class itchat_input_component(itchat_base_component.itchat_base_component) :
                 self.outer.send_msg( self.get_helper() )
             elif msg['Text'] == '1' or msg['Text'] == '个性签名' :
                 self.get_all_signature()
-
-
 
     def get_all_signature(self):
         friend_infos = self.v_itchat.get_friend_infos()

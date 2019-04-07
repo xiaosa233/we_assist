@@ -33,5 +33,5 @@ class itchat_task_component (itchat_base_component.itchat_base_component):
             now_time = time.time()
 
 
-    def add_task(self, in_task):
-        self.task_deque.push(in_task)
+    def add_task(self, in_task, *args, **kwargs):
+        self.task_deque.push(in_task, *args, **kwargs)

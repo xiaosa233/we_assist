@@ -2,6 +2,7 @@ from utils import func_library
 import os
 from os import path
 
+
 class record_object:
     def __init__(self, msg, receive_dir):
         self.msg = msg
@@ -65,4 +66,12 @@ class record_object:
         except Exception as e :
             reply_msg = str(e)
             aysn_callback(reply_msg, "", False)
+
+    def aysn_revoke_impl(self, callback, reply_msg, file_path, is_picture):
+        try :
+            self.msg['Text'](file_path)
+            callback(reply_msg, file_path, is_picture)
+        except Exception as e :
+            reply_msg = str(e)
+            callback(reply_msg, "", False)
 

@@ -128,7 +128,7 @@ class itchat_instance:
         '''
         itchat_instance.mkdir(os.path.dirname(storage_path))
 
-        value_itchat_instance.instance.auto_login(enableCmdQR=False, hotReload=True, statusStorageDir=storage_path,
+        value_itchat_instance.instance.auto_login(enableCmdQR=1, hotReload=True, statusStorageDir=storage_path,
                                  loginCallback=value_itchat_instance.login_callback, exitCallback=value_itchat_instance.logout_callback)
 
         @value_itchat_instance.instance.msg_register([itchat.content.TEXT, itchat.content.MAP,

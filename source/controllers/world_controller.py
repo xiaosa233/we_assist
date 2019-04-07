@@ -1,6 +1,7 @@
 
 import tick_controller
 import input_manager
+import async_controller
 from utils import function_dispatcher
 from models import global_accessor
 from models import json_object
@@ -10,13 +11,14 @@ class world_controller:
     
     def __init__(self) :
         self.v_tick_controller = tick_controller.tick_controller()
+        self.v_async_controller = async_controller.async_controller()
         self.v_input_manager = input_manager.input_manager()
         self.should_end = False
         self.input_dispatcher = None
         self.test_mode = False
         self.run_frame = 40
         global_accessor.global_accessor.set_value('world', self)
-
+        global_accessor.global_accessor.set_value('async_controller', self.v_async_controller)
 
 
 
@@ -30,11 +32,12 @@ class world_controller:
         self.input_dispatcher ['exit'].add(self.on_input_event_exit)
         self.v_tick_controller.initialize()
         self.v_input_manager.initialize()
-
+        self.v_async_controller.initialize()
 
     def destroy(self):
         self.v_tick_controller.destroy()
         self.v_input_manager.destroy()
+        self.v_async_controller.destroy()
         if self.input_dispatcher is not None :
             function_dispatcher.function_dispatcher.close(self.input_dispatcher.name)
 
