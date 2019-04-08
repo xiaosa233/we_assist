@@ -41,9 +41,9 @@ class itchat_instance:
     '''
     storage_dir is dir/ 
     '''
-    def login_and_run(self, storage_dir) :
+    def login_and_run(self, storage_dir, cmd_qr=1) :
         if self.run_thread is None :
-            self.run_thread = threading.Thread(target=itchat_instance.itchat_run, args=(self, storage_dir) )
+            self.run_thread = threading.Thread(target=itchat_instance.itchat_run, args=(self, storage_dir, cmd_qr) )
             self.run_thread.start()
 
     def logout(self, is_keep_hotload = True) :
@@ -120,7 +120,7 @@ class itchat_instance:
         return self.instance.search_chatrooms(userName=userName)
 
     @staticmethod
-    def itchat_run(value_itchat_instance, storage_dir):
+    def itchat_run(value_itchat_instance, storage_dir, cmd_qr):
 
         storage_path = storage_dir + value_itchat_instance.instance_name + '.pkl'
         '''
@@ -128,7 +128,7 @@ class itchat_instance:
         '''
         itchat_instance.mkdir(os.path.dirname(storage_path))
 
-        value_itchat_instance.instance.auto_login(enableCmdQR=1, hotReload=True, statusStorageDir=storage_path,
+        value_itchat_instance.instance.auto_login(enableCmdQR=cmd_qr, hotReload=True, statusStorageDir=storage_path,
                                  loginCallback=value_itchat_instance.login_callback, exitCallback=value_itchat_instance.logout_callback)
 
         @value_itchat_instance.instance.msg_register([itchat.content.TEXT, itchat.content.MAP,

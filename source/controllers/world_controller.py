@@ -34,6 +34,10 @@ class world_controller:
         self.v_input_manager.initialize()
         self.v_async_controller.initialize()
 
+
+        if len(sys_argv) >= 2:
+            global_accessor.global_accessor.set_value('cmd_qr', sys_argv[1])
+
     def destroy(self):
         self.v_tick_controller.destroy()
         self.v_input_manager.destroy()

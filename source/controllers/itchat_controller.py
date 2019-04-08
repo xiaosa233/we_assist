@@ -78,8 +78,10 @@ class itchat_controller (base_controller.base_controller):
         self.components.append( itchat_input_component.itchat_input_component(self))
         self.components.append( itchat_record_component.itchat_record_component(self))
 
+        cmd_qr=global_accessor.global_accessor.get_safe('cmd_qr')
+        cmd_qr = cmd_qr if cmd_qr else 1
 
-        self.v_itchat.login_and_run(self.get_save_data_dir() + self.v_itchat.get_instance_name() + '/')
+        self.v_itchat.login_and_run(self.get_save_data_dir() + self.v_itchat.get_instance_name() + '/', cmd_qr)
         for it in self.components :
             it.on_start()
 

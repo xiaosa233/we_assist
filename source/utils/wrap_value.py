@@ -8,3 +8,5 @@ class wrap_value:
 
     def set_value(self, in_value):
         self.value = in_value
+
+
