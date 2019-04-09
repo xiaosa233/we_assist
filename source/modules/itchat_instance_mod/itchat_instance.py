@@ -105,7 +105,10 @@ class itchat_instance:
             return False
 
     def get_friend_infos(self, update = False):
-        return self.instance.get_friends(update=update)
+        try :
+            return self.instance.get_friends(update=update)
+        except Exception as e :
+            return []
 
     def get_itchat_name(self):
         return self.itchat_name
