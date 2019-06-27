@@ -17,6 +17,7 @@ class world_controller:
         self.input_dispatcher = None
         self.test_mode = False
         self.run_frame = 40
+        self.sys_argv = None
         global_accessor.global_accessor.set_value('world', self)
         global_accessor.global_accessor.set_value('async_controller', self.v_async_controller)
 

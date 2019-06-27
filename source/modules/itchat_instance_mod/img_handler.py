@@ -24,7 +24,7 @@ class img_handler :
             if img_path_a == img_path_b :
                 return False
             try :
-                if img_handler.get_file_size_in_kb(img_path_a) != img_handler.get_file_size_in_kb(img_path_b) :
+                if abs(img_handler.get_file_size_in_kb(img_path_a) - img_handler.get_file_size_in_kb(img_path_b) ) < 1:
                     return True
 
                 img_a = Image.open(img_path_a)
