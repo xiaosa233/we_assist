@@ -6,6 +6,10 @@ import time
 
 def tick():
     pass
+	
+	
+def on_error():
+	print('error !')
 
 
 def on_connected():
@@ -13,7 +17,7 @@ def on_connected():
 
 
 def main() :
-    test_client = tcp_client.tcp_client('127.0.0.1', 23332, connected_cb=on_connected)
+    test_client = tcp_client.tcp_client('127.0.0.1', 23332, connected_cb=on_connected, error_cb=on_error)
     test_client.connect()
 
 

@@ -1,5 +1,5 @@
 import asyncio
-
+import threading
 class tcp_server :
     def __init__(self, ip, port, connected_cb = None, error_cb=None, msg_cb=None):
         self.ip = ip
@@ -10,11 +10,22 @@ class tcp_server :
         self.limit = 64 * 1024 #64KB
 
         self.server = None
+        self.server_thread = None
 
 
     def start(self):
-        asyncio.run(self.start_impl())
-        asyncio.run(self.serve_forever())
+        if not self.server_thread :
+            self.server_thread = threading.Thread(target=self.server_loop)
+            self.server_thread.start()
+            
+    def stop(self):
+        if self.server_thread :
+            if self.server :
+                self.server.close()
+                self.server = None
+            
+            self.server_thread.join()
+            self.server_thread = None
 
         '''
         loop = asyncio.get_event_loop()
@@ -29,17 +40,15 @@ class tcp_server :
         loop.run_forever()
         '''
 
+    def server_loop(self):
+        asyncio.run(self.start_impl() )
 
     async def start_impl(self):
         self.server = await asyncio.start_server(self.on_connected_cb, self.ip, self.port,limit=self.limit)
-        #async with self.server:
-        await self.server.serve_forever()
+        async with self.server:
+                await self.server.serve_forever()
 
-    async def serve_forever(self):
-        pass
 
-    def stop(self):
-        pass
 
     async def on_connected_cb(self, reader, writer):
         print('new connection')

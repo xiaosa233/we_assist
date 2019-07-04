@@ -12,6 +12,13 @@ def main() :
     test_server = tcp_server.tcp_server('0.0.0.0', 23332)
     test_server.start()
     print('start server')
+    
+    time.sleep(2)
+    test_server.stop()
+    print('stop!')
+    test_server = tcp_server.tcp_server('0.0.0.0', 23332)
+    print('restart!')
+    
 
 
     while True :
