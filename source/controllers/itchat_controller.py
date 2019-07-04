@@ -103,10 +103,10 @@ class itchat_controller (base_controller.base_controller):
     def tick(self, delta_time):
         if self.is_logging :
             if self.friend_info_ticker.tick(delta_time):
-                print('time : ', time.time(), 'update friend info')
+                log_controller.g_log('time : ' + str(time.time()) +'update friend info')
                 self.update_friend_infos()
             if self.head_ticker.tick(delta_time):
-                print('time : ', time.time() ,'update head imgs')
+                log_controller.g_log('time : ' + str(time.time()) + 'update head imgs')
                 self.update_head_image()
 
     def update_friend_infos(self) :

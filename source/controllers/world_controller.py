@@ -6,6 +6,8 @@ from utils import function_dispatcher
 from models import global_accessor
 from models import json_object
 import config_controller
+import time
+import sys
 
 class world_controller:
     
@@ -38,6 +40,25 @@ class world_controller:
 
         if len(sys_argv) >= 2:
             global_accessor.global_accessor.set_value('cmd_qr', sys_argv[1])
+
+    def loop(self, frame = 120):
+        self.set_run_frame(frame)
+        start_time = time.time()
+        fix_delta_time = 1.0 / frame
+        last_time = start_time - fix_delta_time
+        count = 0
+
+        while True :
+            self.update(time.time() - last_time)
+            if self.is_end():
+                break
+
+            last_time = time.time()
+            count += 1
+            end_time = count * fix_delta_time + start_time
+            if end_time > last_time :
+                time.sleep(end_time - last_time)
+
 
     def destroy(self):
         self.v_tick_controller.destroy()

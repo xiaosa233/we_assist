@@ -63,7 +63,7 @@ class itchat_record_component (itchat_base_component.itchat_base_component) :
 
         after_len = len(self.msg_history)
         if after_len > now_len :
-               print(' pop element number = ', after_len - now_len)
+               log_controller.g_log(' pop element number = ' + after_len - now_len)
 
     def on_revoke_msg(self, msg):
         old_msg_id = re.search("\<msgid\>(.*?)\<\/msgid\>", msg['Content']).group(1)

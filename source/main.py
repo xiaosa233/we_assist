@@ -17,34 +17,10 @@ def show_cmd_helper() :
 def main() :
 
     run_frame = 40 # 10hz to run
-
-    fix_delta_time = 1.0 / run_frame
-
     #initialize world controller
     v_world_controller = itchat_world_controller.itchat_world_controller()
-    v_world_controller.set_run_frame(run_frame)
     v_world_controller.initialize(sys.argv)
-
-    pre_time = time.time()
-    delta_time = fix_delta_time
-
-
-
-    while True :
-        v_world_controller.update(delta_time)
-        if v_world_controller.is_end() :
-            break
-
-        now_time = time.time()
-        delta_time = now_time - pre_time
-        pre_time = now_time
-
-        if delta_time < fix_delta_time:
-            time.sleep(fix_delta_time - delta_time)
-            tmp = time.time()
-            delta_time = delta_time + tmp - pre_time
-            pre_time = tmp
-
+    v_world_controller.loop(run_frame)
     v_world_controller.destroy()
 
 

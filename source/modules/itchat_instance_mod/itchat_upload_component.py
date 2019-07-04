@@ -3,6 +3,7 @@ import shutil
 import tempfile
 import os
 import random
+from controllers import log_controller
 '''
 因为itchat 不能上传带中文路径的文件或者图片
 所有通过这个component 进行修复
@@ -18,7 +19,7 @@ class itchat_upload_component(itchat_base_component.itchat_base_component):
         if self.is_contain_chinese(to_send_path) :
             #copy file to tmp files and rename it
             result_path = self.generate_tmp_path(to_send_path)
-            print('file random', to_send_path, ' -> ', result_path)
+            log_controller.log_controller.g_log('file random' + to_send_path + ' -> ' + result_path)
             shutil.copy(to_send_path, result_path)
 
         return result_path
