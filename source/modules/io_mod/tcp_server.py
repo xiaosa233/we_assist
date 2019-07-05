@@ -10,6 +10,7 @@ class tcp_server :
         self.limit = 64 * 1024 #64KB
 
         self.server = None
+        self.loop = None
         self.server_thread = None
 
 
@@ -21,37 +22,33 @@ class tcp_server :
     def stop(self):
         if self.server_thread :
             if self.server :
+                self.loop.stop()
                 self.server.close()
-                self.server = None
             
             self.server_thread.join()
             self.server_thread = None
 
-        '''
-        loop = asyncio.get_event_loop()
-        coro = asyncio.start_server(self.on_connected_cb, self.ip, self.port, loop=loop,limit=self.limit)
-        self.server = loop.run_until_complete(coro)
-        print('run complete')
-        coro = asyncio.start_server(self.on_connected_cb, self.ip, self.port + 1, loop=loop,limit=self.limit)
-        self.server = loop.run_until_complete(coro)
-        print('run complete')
-
-
-        loop.run_forever()
-        '''
 
     def server_loop(self):
-        asyncio.run(self.start_impl() )
+        self.start_impl()
 
-    async def start_impl(self):
-        self.server = await asyncio.start_server(self.on_connected_cb, self.ip, self.port,limit=self.limit)
-        async with self.server:
-                await self.server.serve_forever()
-
+    def start_impl(self):
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+        coro = asyncio.start_server(self.on_connected_cb, self.ip, self.port, loop=self.loop,limit=self.limit)
+        self.server = self.loop.run_until_complete(coro)
+        self.loop.run_forever()
+        self.loop.run_until_complete(self.server.wait_closed())
+        self.loop.run_until_complete(self.loop.shutdown_asyncgens())
+        self.loop.close()
+        self.loop = None
+        self.server = None
 
 
     async def on_connected_cb(self, reader, writer):
         print('new connection')
+        message = 'hello world'
+        #writer.write(message.encode())
         pass
 
 
