@@ -1,5 +1,6 @@
 import asyncio
 import threading
+import tcp_server_connection
 class tcp_server :
     def __init__(self, ip, port, connected_cb = None, error_cb=None, msg_cb=None):
         self.ip = ip
@@ -46,9 +47,13 @@ class tcp_server :
 
 
     async def on_connected_cb(self, reader, writer):
+        self.tmp = tcp_server_connection.tcp_server_connection(reader, writer)
         print('new connection')
         message = 'hello world'
-        #writer.write(message.encode())
+        writer.write(message.encode())
+        await writer.drain()
+        print('send messgae : ', message)
+        self.tmp.start_work()
         pass
 
 

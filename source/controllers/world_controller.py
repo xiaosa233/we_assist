@@ -49,15 +49,16 @@ class world_controller:
         count = 0
 
         while True :
-            self.update(time.time() - last_time)
+            new_time = time.time()
+            self.update(new_time - last_time)
             if self.is_end():
                 break
-
-            last_time = time.time()
+            last_time = new_time
+            new_time = time.time()
             count += 1
             end_time = count * fix_delta_time + start_time
-            if end_time > last_time :
-                time.sleep(end_time - last_time)
+            if end_time > new_time :
+                time.sleep(end_time - new_time)
 
 
     def destroy(self):

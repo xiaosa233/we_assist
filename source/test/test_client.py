@@ -8,8 +8,8 @@ def tick():
     pass
 	
 	
-def on_error():
-	print('error !')
+def on_error(exception):
+	print('error !' , str(exception))
 
 
 def on_connected():
