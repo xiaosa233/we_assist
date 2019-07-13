@@ -4,26 +4,38 @@ import time
 
 
 
-def tick():
-    pass
-	
-	
-def on_error(exception):
-	print('error !' , str(exception))
 
+class test_client_main:
+    def work(self):
+        self.test_client = tcp_client.tcp_client('127.0.0.1', 23332, connected_cb=self.on_connected, error_cb=self.on_error, msg_cb =self.on_msg)
+        self.is_connected = False
+        self.test_client.connect()
+        self.count = 0
 
-def on_connected():
-    print('connected !!')
+        while True :
+            self.tick()
+            time.sleep(1)
+
+    def tick(self):
+        if self.is_connected :
+            self.count += 1
+            self.test_client.send(('hello' + str(self.count) ).encode())
+
+    def on_error(self, exception):
+        self.is_connected = False
+        print('error !', str(exception))
+
+    def on_connected(self):
+        print(' connected !!!')
+        self.is_connected = True
+
+    def on_msg(self):
+        pass
 
 
 def main() :
-    test_client = tcp_client.tcp_client('127.0.0.1', 23332, connected_cb=on_connected, error_cb=on_error)
-    test_client.connect()
 
-
-    while True :
-        tick()
-        time.sleep(0.03)
-
+    inst = test_client_main()
+    inst.work()
 
 main()

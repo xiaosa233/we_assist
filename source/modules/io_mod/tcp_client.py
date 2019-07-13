@@ -1,11 +1,6 @@
 import tcp_client_base
-import threading
-
-from models import loop_object
 from enum import Enum
-
 import asyncio
-import time
 
 
 class eclient_state(Enum):
@@ -21,36 +16,17 @@ class tcp_client(tcp_client_base.tcp_client_base):
         self.connected_cb = connected_cb
         self.error_cb = error_cb
         self.msg_cb = msg_cb
-        self.is_connected = False
-        self.run_thread = None
         self.client_state = eclient_state.unvalid
 
     def connect(self):
-        self.is_connected = True
-        if self.run_thread is None :
-            self.client_state = eclient_state.connecting
-            self.run_thread  = threading.Thread(target=self.client_loop_thread)
-            self.run_thread.run()
+        self.client_state = eclient_state.connecting
+        super().start_work()
 
     def close(self):
-        self.is_connected = False
-        if self.run_thread:
-            self.client_state = eclient_state.unvalid
-            self.run_thread.join()
-            self.run_thread = None
+        self.client_state = eclient_state.unvalid
+        super().close()
 
-
-    def client_loop_thread(self):
-        asyncio.run(self.client_loop())
-
-    async def client_loop(self):
-        last_time = time.time()
-
-        while self.is_connected :
-            new_time = time.time()
-            await self.client_tick(new_time - last_time)
-            last_time = new_time
-
+    #virtual
     async def client_tick(self, delta):
         if self.client_state == eclient_state.connecting :
             #connected
@@ -62,7 +38,7 @@ class tcp_client(tcp_client_base.tcp_client_base):
                 self.on_error_cb(e)
 
         elif self.client_state == eclient_state.work :
-            await super().work() #super.work
+            await super().work(delta) #super.work
 
 
 

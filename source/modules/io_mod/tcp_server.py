@@ -8,11 +8,11 @@ class tcp_server :
         self.connected_cb = connected_cb
         self.error_cb = error_cb
         self.msg_cb = msg_cb
-        self.limit = 64 * 1024 #64KB
 
         self.server = None
         self.loop = None
         self.server_thread = None
+        self.tcp_connections = []
 
 
     def start(self):
@@ -29,6 +29,11 @@ class tcp_server :
             self.server_thread.join()
             self.server_thread = None
 
+    def clear_data(self):
+        self.loop = None
+        self.server = None
+        self.tcp_connections.clear()
+
 
     def server_loop(self):
         self.start_impl()
@@ -36,28 +41,61 @@ class tcp_server :
     def start_impl(self):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
-        coro = asyncio.start_server(self.on_connected_cb, self.ip, self.port, loop=self.loop,limit=self.limit)
+        coro = asyncio.start_server(self.on_connected_cb, self.ip, self.port, loop=self.loop)
         self.server = self.loop.run_until_complete(coro)
         self.loop.run_forever()
         self.loop.run_until_complete(self.server.wait_closed())
         self.loop.run_until_complete(self.loop.shutdown_asyncgens())
         self.loop.close()
-        self.loop = None
-        self.server = None
+
+        self.clear_data()
+
+    def broadcast(self, data):
+        for connection in self.tcp_connections :
+            connection.send(data)
 
 
     async def on_connected_cb(self, reader, writer):
-        self.tmp = tcp_server_connection.tcp_server_connection(reader, writer)
-        print('new connection')
-        message = 'hello world'
-        writer.write(message.encode())
-        await writer.drain()
-        print('send messgae : ', message)
-        self.tmp.start_work()
-        pass
+        tmp = tcp_server_connection.tcp_server_connection(self, reader, writer)
+        self.tcp_connections.append(tmp)
+
+        if self.connected_cb :
+            self.connected_cb(tmp)
+
+        asyncio.get_event_loop().create_task( tmp.recv_once() )
+
+        '''
+        loop = asyncio.get_event_loop()
+        loop.create_task(self.connect)
+
+        print('test new connection')
+        data = await reader.read(100)
+        print('recv data ' , data.decode() )
+        
+        '''
+
+        '''
+        tmp = tcp_server_connection.tcp_server_connection(self, reader, writer)
+        self.tcp_connections.append(tmp)
+        if self.connected_cb :
+            self.connected_cb(tmp)
+        tmp.start_work()
+        '''
+
+    def close_connection(self, tcp_connection):
+        self.tcp_connections.remove(tcp_connection)
 
 
+    def on_msg(self, tcp_connection, data):
+        if self.msg_cb :
+            self.msg_cb(tcp_connection, data)
 
+    def on_read_error(self, tcp_connection, exception):
+        if exception.errno == 10054 : #force to close
+            self.tcp_connections.remove(tcp_connection)
+
+        if self.error_cb :
+            self.error_cb(tcp_connection, exception)
 
 
 
