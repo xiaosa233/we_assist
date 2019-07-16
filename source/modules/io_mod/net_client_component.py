@@ -22,6 +22,12 @@ class net_client_component(base.base) :
         self.client = tcp_client.tcp_client(self.ip, self.port, msg_cb=msg_cb, error_cb=self.error_cb, connected_cb=self.connected_cb)
         self.client.connect()
 
+    def close(self):
+        self.client.close()
+
+    def connect(self):
+        self.client.connect()
+
 
     def destroy(self):
         super().destroy()

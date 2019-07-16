@@ -1,7 +1,7 @@
 from controllers import base_controller
 from modules.io_mod import net_protocol_component
 from modules.io_mod import net_client_component
-
+from utils.function_dispatcher import function_dispatcher
 import wakeup_check_component
 import wakeup_state_component
 import wakeup_sysexec_component
@@ -13,6 +13,8 @@ class wakeup_net_controller(base_controller.base_controller) :
 
     def initialize(self):
         super().initialize()
+
+        function_dispatcher.open()['reset'].add(self.on_reset)
 
         protocol_component = net_protocol_component.net_protocol_component(self)
         self.components.append(protocol_component)
@@ -46,5 +48,14 @@ class wakeup_net_controller(base_controller.base_controller) :
             msg = net_protocol_component.net_protocol_component.event_name['close'] + '!'
             print('WAKEUP send close cmd', msg)
             client_component.send(msg)
+
+    def on_reset(self):
+        client_component = self.get_component('net_client_component')
+        if client_component :
+            print('closing')
+            client_component.close()
+            client_component.connect()
+            print('reconnect !!')
+
 
 

@@ -66,4 +66,8 @@ class tcp_client_base :
 
     def send(self, data):
         if self.writer :
-            self.writer.write(data)
+            try :
+                self.writer.write(data)
+            except Exception as e :
+                self.on_read_error(e)
+

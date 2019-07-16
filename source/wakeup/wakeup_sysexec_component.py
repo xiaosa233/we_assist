@@ -16,7 +16,7 @@ class wakeup_sysexec_component(base.base) :
         pass
 
     def reboot(self, argvs):
-        exec_str = [self.get_exec_str()]
+        exec_str = self.get_exec_str()
         exec_str.extend(argvs)
         exec_str.append(config_controller.get_project_dir() + 'source')
         self.new_instance(exec_str)
@@ -24,11 +24,16 @@ class wakeup_sysexec_component(base.base) :
 
 
     def get_exec_str(self) :
+        result_args = []
         dir_path = config_controller.get_project_dir() + 'source/wakeup/'
         if sys.platform[0:3] == 'win' :
-            return dir_path + 'batches/reboot.bat'
+            dir_path = dir_path + 'batches/reboot.bat'
         else:
-            return dir_path + 'batches/reboot.sh' 
+            dir_path = dir_path + 'batches/reboot.sh' 
+            result_args.append('sh')
+
+        result_args.append(dir_path)
+        return result_args
 
     @staticmethod
     def new_instance(argvs) :

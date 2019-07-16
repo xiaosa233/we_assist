@@ -8,10 +8,10 @@ class wakeup_check_component( base.base):
         super().__init__()
         self.controller = controller
         #self.limit_time = limit_time
-        self.limit_time = 60
+        self.limit_time = 90
         self.is_enable = False
         self.is_client_good = False
-        self.check_ticker = ticker.ticker(5)
+        self.check_ticker = ticker.ticker(90)
         self.last_arrive_time = 0
 
 
@@ -54,7 +54,7 @@ class wakeup_check_component( base.base):
         if component and len(argvs) > 0:
             #send close command 
             self.controller.send_close_cmd()
-            time.sleep(5) #sleep 3 second
+            time.sleep(8) #sleep 3 second
             component.reboot(argvs)
             self.reset()
         

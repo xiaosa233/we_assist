@@ -112,8 +112,8 @@ class itchat_controller (base_controller.base_controller):
     def tick(self, delta_time):
         if self.is_logging :
             if self.arrive_ticker.tick(delta_time) and self.get_net_controller():
-                pass
-                #self.get_net_controller().send_arrive()
+                #pass
+                self.get_net_controller().send_arrive()
 
             if self.friend_info_ticker.tick(delta_time):
                 log_controller.g_log('time : ' + str(time.time()) +'update friend info')
