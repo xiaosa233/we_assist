@@ -22,13 +22,18 @@ Email：li.xiaojian233@qq.com
 
 2、PIL (`pip install pillow`)
 
-3、python3.x （我猜的版本号）
+3、python3.7 （must be >= 3.7）
 
 ------
 ## 教程：
 
 
 1、运行source 里面的main.py
+
+```buildoutcfg
+python main.py & 
+python wakeup_main.py & 
+```
 
 2、扫码登录即可
 
