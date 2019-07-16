@@ -4,6 +4,7 @@ from modules.io_mod import net_client_component
 
 import wakeup_check_component
 import wakeup_state_component
+import wakeup_sysexec_component
 
 class wakeup_net_controller(base_controller.base_controller) :
     default_port = 23332
@@ -18,6 +19,7 @@ class wakeup_net_controller(base_controller.base_controller) :
         self.components.append(net_client_component.net_client_component(self, '127.0.0.1', self.default_port, error_cb=self.on_error_cb, connected_cb=self.on_connected_cb))
         self.components.append(wakeup_check_component.wakeup_check_component(self, 5 * 60)) #5mins once
         self.components.append(wakeup_state_component.wakeup_state_component(self))
+        self.components.append(wakeup_sysexec_component.wakeup_sysexec_component(self))
         for it in self.components :
             it.initialize()
 
@@ -37,5 +39,12 @@ class wakeup_net_controller(base_controller.base_controller) :
         check_component = self.get_component('wakeup_check_component')
         if check_component:
             check_component.is_client_good = True
+
+    def send_close_cmd(self):
+        client_component = self.get_component('net_client_component')
+        if client_component :
+            msg = net_protocol_component.net_protocol_component.event_name['close'] + '!'
+            print('WAKEUP send close cmd', msg)
+            client_component.send(msg)
 
 

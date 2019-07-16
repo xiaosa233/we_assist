@@ -76,6 +76,7 @@ class world_controller:
         return self.should_end
 
     def on_input_event_exit(self):
+        print('recv close event!!')
         self.should_end = True
 
     def set_test_mode(self, in_mode):

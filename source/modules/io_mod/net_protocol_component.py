@@ -8,7 +8,10 @@ class net_protocol_component(base.base) :
                    'arrive' : 'ev_arrive',
                    'new_state' : 'ev_new_state',
                    'ask_state':'ev_now_state',
-                   'asw_state' : 'ev_asw_state'}
+                   'asw_state' : 'ev_asw_state',
+                   'ask_pid' : 'ev_ask_pid',
+                   'asw_pid' : 'ev_asw_pid',
+                   'close' : 'ev_close'}
 
     def __init__(self, controller):
         super().__init__()
@@ -63,5 +66,5 @@ class net_protocol_component(base.base) :
 
 
     def unregister_event(self, event_key, event_cb):
-        if event_key in self.events :
+        if event_key in self.events and event_cb in self.events[event_key]:
             self.events[event_key].remove(event_cb)

@@ -21,6 +21,7 @@ def main() :
     v_world_controller = itchat_world_controller.itchat_world_controller()
     v_world_controller.initialize(sys.argv)
     v_world_controller.loop(run_frame)
+    print(' end loop!!!')
     v_world_controller.destroy()
 
 

@@ -50,6 +50,9 @@ class tcp_client(tcp_client_base.tcp_client_base):
     #virtual
     def on_read_error(self, exception):
         self.on_error_cb(exception)
+        if exception.errno == 10054 or exception.errno == 10053: #force to close
+            self.reader = None 
+            self.writer = None
         if self.client_state == eclient_state.work:
             self.client_state = eclient_state.connecting #make it reconnect
 
