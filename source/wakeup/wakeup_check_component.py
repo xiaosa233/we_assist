@@ -11,7 +11,7 @@ class wakeup_check_component( base.base):
         self.limit_time = 60
         self.is_enable = False
         self.is_client_good = False
-        self.check_ticker = ticker.ticker(10)
+        self.check_ticker = ticker.ticker(5)
         self.last_arrive_time = 0
 
 
@@ -55,7 +55,7 @@ class wakeup_check_component( base.base):
             #send close command 
             self.controller.send_close_cmd()
             time.sleep(5) #sleep 3 second
-            #component.reboot(argvs)
+            component.reboot(argvs)
             self.reset()
         
     def reset(self):

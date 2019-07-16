@@ -16,7 +16,7 @@ class input_handler(base.base) :
 
     def destroy(self):
         if self.input_thread is not None :
-            self.input_thread.join()
+            self.input_thread.join(3)
 
     def get_last_input(self):
         return self.last_input
