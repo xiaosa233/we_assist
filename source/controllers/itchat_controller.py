@@ -15,11 +15,13 @@ import itchat_head_component
 import itchat_upload_component
 import itchat_input_component
 import itchat_record_component
+import itchat_state_component
 from models import json_object
 from models import global_accessor
 from models import task_deque
 from models import ticker
 from utils import function_dispatcher
+
 
 class itchat_controller (base_controller.base_controller):
 
@@ -33,12 +35,14 @@ class itchat_controller (base_controller.base_controller):
         self.is_logging = False
         self.friend_info_ticker = ticker.ticker(60.0)
         self.head_ticker = ticker.ticker(60 * 10.0)
+        self.arrive_ticker = ticker.ticker(60.0) #1min for arrive
+
         self.update_head_img_index = 0 # use for switch path when get head imgs
-        self.components = []
         self.cache_component = None
         self.task_component = None
         self.head_component = None
         self.upload_component = None
+        self.net_controller = None
         
 # public ------------
     def start(self) :
@@ -77,6 +81,7 @@ class itchat_controller (base_controller.base_controller):
         self.components.append(  self.upload_component )
         self.components.append( itchat_input_component.itchat_input_component(self))
         self.components.append( itchat_record_component.itchat_record_component(self))
+        self.components.append(itchat_state_component.itchat_state_component(self))
 
         cmd_qr=global_accessor.global_accessor.get_safe('cmd_qr')
         cmd_qr = cmd_qr if cmd_qr else 1
@@ -99,9 +104,17 @@ class itchat_controller (base_controller.base_controller):
     def get_itchat(self):
         return self.v_itchat
 
+    def get_net_controller(self):
+        if self.net_controller is None :
+            self.net_controller = global_accessor.global_accessor.get_safe('net_controller')
+        return self.net_controller
 
     def tick(self, delta_time):
         if self.is_logging :
+            if self.arrive_ticker.tick(delta_time) and self.get_net_controller():
+                pass
+                #self.get_net_controller().send_arrive()
+
             if self.friend_info_ticker.tick(delta_time):
                 log_controller.g_log('time : ' + str(time.time()) +'update friend info')
                 self.update_friend_infos()
@@ -115,6 +128,8 @@ class itchat_controller (base_controller.base_controller):
 
         if self.cache_component is not None :
             self.cache_component.update_friend_infos(True)
+
+
     def update_head_image(self):
         if not self.is_logging:
             return
@@ -168,13 +183,6 @@ class itchat_controller (base_controller.base_controller):
 
     def get_is_logging(self):
         return self.is_logging
-
-    def get_component(self, component_name):
-
-        for it in self.components :
-            if type(it).__name__ == component_name :
-                return it
-        return None
 
 
 

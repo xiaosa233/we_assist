@@ -34,6 +34,8 @@ class tcp_client_base :
     def close(self):
         self.is_connected = False
         if self.run_thread:
+            if self.write :
+                self.writer.drain()
             self.run_thread.join()
             self.run_thread = None
 

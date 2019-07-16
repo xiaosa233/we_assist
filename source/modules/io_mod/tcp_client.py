@@ -44,9 +44,8 @@ class tcp_client(tcp_client_base.tcp_client_base):
 
     #virtual
     def on_msg(self, data):
-        print(data.decode())
         if self.msg_cb:
-            self.msg_cb() #new msg
+            self.msg_cb(self, data) #new msg
 
     #virtual
     def on_read_error(self, exception):
@@ -60,10 +59,10 @@ class tcp_client(tcp_client_base.tcp_client_base):
 
     def on_connected_cb(self):
         if self.connected_cb :
-            self.connected_cb()
+            self.connected_cb(self)
 
     def on_error_cb(self, exception):
         if self.error_cb :
-            self.error_cb(exception)
+            self.error_cb(self, exception)
 
         #reconnected

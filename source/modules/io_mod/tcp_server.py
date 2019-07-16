@@ -1,6 +1,7 @@
 import asyncio
 import threading
 import tcp_server_connection
+from controllers import log_controller
 class tcp_server :
     def __init__(self, ip, port, connected_cb = None, error_cb=None, msg_cb=None):
         self.ip = ip
@@ -64,24 +65,6 @@ class tcp_server :
 
         asyncio.get_event_loop().create_task( tmp.recv_once() )
 
-        '''
-        loop = asyncio.get_event_loop()
-        loop.create_task(self.connect)
-
-        print('test new connection')
-        data = await reader.read(100)
-        print('recv data ' , data.decode() )
-        
-        '''
-
-        '''
-        tmp = tcp_server_connection.tcp_server_connection(self, reader, writer)
-        self.tcp_connections.append(tmp)
-        if self.connected_cb :
-            self.connected_cb(tmp)
-        tmp.start_work()
-        '''
-
     def close_connection(self, tcp_connection):
         self.tcp_connections.remove(tcp_connection)
 
@@ -91,8 +74,10 @@ class tcp_server :
             self.msg_cb(tcp_connection, data)
 
     def on_read_error(self, tcp_connection, exception):
-        if exception.errno == 10054 : #force to close
+        if exception.errno == 10054 or exception.errno == 10053: #force to close
             self.tcp_connections.remove(tcp_connection)
+        else :
+            log_controller.log_controller.g_log('unknow exception : ' + str(exception))
 
         if self.error_cb :
             self.error_cb(tcp_connection, exception)
