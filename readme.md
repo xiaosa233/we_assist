@@ -63,7 +63,7 @@ python main.py 2
 
 ------
 
-#release note
+## release note
 
 V1.1 
 1. 添加微信唤醒程序，可自动修复itchat 长时间连接问题
@@ -76,5 +76,5 @@ V1.0
 3. 监控昵称的更改
 
 
-V1.1
+V0.1
 1. 添加监控信息
