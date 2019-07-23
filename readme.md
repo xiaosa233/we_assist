@@ -28,7 +28,7 @@ Email：li.xiaojian233@qq.com
 ## 教程：
 
 
-1、分别运行 source/main.py 和 source/wakeup_main/py 
+1、分别运行 source/main.py 和 source/wakeup/wakeup_main.py 
 
 2、扫码登录即可
 
