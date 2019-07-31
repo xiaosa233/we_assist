@@ -41,7 +41,7 @@ class itchat_record_component (itchat_base_component.itchat_base_component) :
             return
 
         if self.task_component :
-            self.task_component.add_task(self.on_receive_impl, msg)
+            self.task_component.add_priority_task(5, self.on_receive_impl, msg)
         else :
             log_controller.g_log('warning: in itchat_record_component, itchat_task_component is None')
 

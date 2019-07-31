@@ -10,6 +10,9 @@ class itchat_input_component(itchat_base_component.itchat_base_component) :
 
     def on_receive(self, msg):
         if msg['ToUserName'] == self.outer.filehelper_name and msg['Type'] == 'Text' :
+            #debug
+            print('receive from 文件助手 : ', msg['TEXT'])
+
             if msg['Text'] == '帮助' :
                 self.outer.send_msg( self.get_helper() )
             elif msg['Text'] == '1' or msg['Text'] == '个性签名' :

@@ -8,7 +8,7 @@ class itchat_task_component (itchat_base_component.itchat_base_component):
     def __init__(self, in_outer):
         super().__init__()
         self.outer = in_outer
-        self.task_deque = task_deque.task_deque()
+        self.task_deque = task_deque.priority_task_queue()
         self.tick_delta = 0.25
 
 
@@ -34,4 +34,7 @@ class itchat_task_component (itchat_base_component.itchat_base_component):
 
 
     def add_task(self, in_task, *args, **kwargs):
-        self.task_deque.push(in_task, *args, **kwargs)
+        self.task_deque.push_priority(0, in_task, *args, **kwargs)
+
+    def add_priority_task(self, priority, in_task, *args, **kwargs):
+        self.task_deque.push_priority(priority, in_task, *args, **kwargs)

@@ -2,6 +2,8 @@ import threading
 import collections
 import time
 
+import queue
+
 
 class task_unit:
     def __init__(self, func, *args, **key_args):
@@ -79,3 +81,40 @@ class async_task :
 
     def add(self, func, *args, **kwargs):
         self.task_deque.push(func, *args, **kwargs)
+
+
+class priority_task_unit(task_unit):
+    def __init__(self, priority, func, *args, **key_args):
+        super().__init__(func, *args, **key_args)
+        self.priority = priority
+
+
+
+class priority_task_queue(task_deque):
+    def push(self, in_task, *args, **kwargs):
+        self.push_priority(0, in_task, *args, **kwargs)
+
+    # default priority is 0#
+    def push_priority(self, priority, in_task, *args, **kwargs):
+        self.mutex.acquire()
+        new_item = priority_task_unit(priority, in_task, *args, **kwargs)
+        if priority == 0:
+            self.deque.append(new_item )
+        else :
+            #find
+            now_len = len(self.deque)
+            index = now_len -1
+            while index >= 0 :
+                if priority > self.deque[index].priority:
+                    index -= 1
+                else :
+                    break
+
+                index -= 1
+
+            if index == -1 :
+                self.deque.appendleft(new_item)
+            else:
+                self.deque.insert(index + 1, new_item)
+            self.deque.insert(index, priority_task_unit(priority, in_task, *args, **kwargs) )
+        self.mutex.release()

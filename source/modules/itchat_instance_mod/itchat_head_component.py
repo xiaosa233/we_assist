@@ -15,6 +15,7 @@ class itchat_head_component(itchat_base_component.itchat_base_component) :
         self.outer = in_outer
         self.last_head_index = 0
         self.task_component = None
+        self.is_working = False #avoid update twice
         self.v_itchat = self.outer.get_itchat()
         self.img_cache = {}
 
@@ -38,6 +39,10 @@ class itchat_head_component(itchat_base_component.itchat_base_component) :
 
 
     def update_head_image(self):
+        if self.is_working :
+            return
+
+        self.is_working = True
         log_controller.log_controller.g_log('begin to update head imgs ')
         friend_infos = self.v_itchat.get_friend_infos()
         self.change_index()
@@ -84,6 +89,7 @@ class itchat_head_component(itchat_base_component.itchat_base_component) :
 
     def on_after_update_head(self):
         log_controller.log_controller.g_log('end update head imgs')
+        self.is_working = False
 
 
     # diff img, it should run in main thread

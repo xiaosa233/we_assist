@@ -140,19 +140,19 @@ class itchat_controller (base_controller.base_controller):
         if username is None :
             username = self.filehelper_name
         if self.task_component :
-            self.task_component.add_task( self.send_msg_impl, msg, username)
+            self.task_component.add_priority_task(5, self.send_msg_impl, msg, username)
 
     def send_file(self, msg, username=None):
         if username is None:
             username = self.filehelper_name
         if self.task_component:
-            self.task_component.add_task(self.send_file_impl, msg, username)
+            self.task_component.add_priority_task(5, self.send_file_impl, msg, username)
 
     def send_image(self, msg, username=None):
         if username is None:
             username = self.filehelper_name
         if self.task_component:
-            self.task_component.add_task(self.send_image_impl, msg, username)
+            self.task_component.add_priority_task(5, self.send_image_impl, msg, username)
 
     def send_msg_impl(self, msg, username):
         self.v_itchat.send_msg_check(msg, username)
