@@ -116,5 +116,4 @@ class priority_task_queue(task_deque):
                 self.deque.appendleft(new_item)
             else:
                 self.deque.insert(index + 1, new_item)
-            self.deque.insert(index, priority_task_unit(priority, in_task, *args, **kwargs) )
         self.mutex.release()
