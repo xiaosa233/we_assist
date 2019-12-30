@@ -5,6 +5,7 @@ import time
 import random
 import ctypes
 from models import base
+from utils import function_dispatcher
 
 class ns_itchat_instance:
     @staticmethod
@@ -37,6 +38,7 @@ class itchat_instance:
         self.on_login_callback = None
         self.on_logout_callback = None
         self.on_newfriend_arrive_callback = None
+        self.function_dispatcher = function_dispatcher.function_dispatcher.open()
 
     '''
     storage_dir is dir/ 
@@ -69,6 +71,7 @@ class itchat_instance:
             self.instance.send(msg=msg, toUserName=toUserName)
         except Exception as e:
             print(e)
+            self.function_dispatcher['itchat_exception']()
 
     def send_msg_check(self, msg, to_username) :
         max_words = 800
@@ -88,12 +91,14 @@ class itchat_instance:
             self.instance.send_image(pic_dir, to_username)
         except Exception as e :
             print(e)
+            self.function_dispatcher['itchat_exception']()
 
     def send_file(self, file_dir, to_username):
         try:
             self.instance.send_file(file_dir, to_username)
         except Exception as e:
             print(e)
+            self.function_dispatcher['itchat_exception']()
 
     def get_head_img(self,pic_path, user_name) :
         itchat_instance.mkdir(os.path.dirname(pic_path))
@@ -102,12 +107,14 @@ class itchat_instance:
             return True 
         except Exception as e :
             print(e)
+            self.function_dispatcher['itchat_exception']()
             return False
 
     def get_friend_infos(self, update = False):
         try :
             return self.instance.get_friends(update=update)
         except Exception as e :
+            self.function_dispatcher['itchat_exception']()
             return []
 
     def get_itchat_name(self):

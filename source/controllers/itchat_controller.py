@@ -53,6 +53,7 @@ class itchat_controller (base_controller.base_controller):
             is_test = world.get_test_mode()
 
         self.function_dispatcher = function_dispatcher.function_dispatcher.open('input')
+        function_dispatcher.function_dispatcher.open()['itchat_exception'].add(self.on_itchat_exception)
 
         if not is_test :
             self.v_itchat = itchat_instance.itchat_instance(self.get_default_login_name())
@@ -108,6 +109,9 @@ class itchat_controller (base_controller.base_controller):
         if self.net_controller is None :
             self.net_controller = global_accessor.global_accessor.get_safe('net_controller')
         return self.net_controller
+
+    def on_itchat_exception(self):
+        self.is_logging = False
 
     def tick(self, delta_time):
         if self.is_logging :
