@@ -19,7 +19,7 @@ class wakeup_net_controller(base_controller.base_controller) :
         protocol_component = net_protocol_component.net_protocol_component(self)
         self.components.append(protocol_component)
         self.components.append(net_client_component.net_client_component(self, '127.0.0.1', self.default_port, error_cb=self.on_error_cb, connected_cb=self.on_connected_cb))
-        self.components.append(wakeup_check_component.wakeup_check_component(self, 5 * 60)) #5mins once
+        self.components.append(wakeup_check_component.wakeup_check_component(self, 60))
         self.components.append(wakeup_state_component.wakeup_state_component(self))
         self.components.append(wakeup_sysexec_component.wakeup_sysexec_component(self))
         for it in self.components :

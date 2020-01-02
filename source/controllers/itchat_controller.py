@@ -22,6 +22,7 @@ from models import task_deque
 from models import ticker
 from utils import function_dispatcher
 
+import sys
 
 class itchat_controller (base_controller.base_controller):
 
@@ -35,7 +36,12 @@ class itchat_controller (base_controller.base_controller):
         self.is_logging = False
         self.friend_info_ticker = ticker.ticker(60.0)
         self.head_ticker = ticker.ticker(60 * 10.0)
-        self.arrive_ticker = ticker.ticker(60.0) #1min for arrive
+        self.arrive_ticker = ticker.ticker(20.0)
+        self.arrive_ticker.tick(15) # make it first time tick at 5sec
+        self.alarm_clock_ticker = ticker.ticker(1.0) # for alarm clock
+
+        #patch to test why I can not success to re logging
+        self.log_relogging_ticker = ticker.ticker(60*3)
 
         self.update_head_img_index = 0 # use for switch path when get head imgs
         self.cache_component = None
@@ -111,20 +117,35 @@ class itchat_controller (base_controller.base_controller):
         return self.net_controller
 
     def on_itchat_exception(self):
+        print('itchat exception at time ', func_library.timestamp_to_datetime(time.time()))
         self.is_logging = False
 
     def tick(self, delta_time):
         if self.is_logging :
             if self.arrive_ticker.tick(delta_time) and self.get_net_controller():
                 #pass
+                print('send arrive time at : ', func_library.timestamp_to_datetime(time.time()))
                 self.get_net_controller().send_arrive()
+            if self.alarm_clock_ticker.tick(delta_time) :
+                #say good night to me
+                time_struct = time.localtime(time.time())
+                if time_struct.tm_hour == 23 and time_struct.tm_min == 0 and time_struct.tm_sec == 0 :
+                    self.send_msg('准备休息了哦~~')
+                elif time_struct.tm_hour == 23 and time_struct.tm_min == 30 and time_struct.tm_sec == 0 :
+                    self.send_msg('晚安~~')
 
             if self.friend_info_ticker.tick(delta_time):
-                log_controller.g_log('time : ' + str(time.time()) +'update friend info')
+                log_controller.g_log('time : ' + func_library.timestamp_to_datetime(time.time()) +'update friend info')
                 self.update_friend_infos()
             if self.head_ticker.tick(delta_time):
-                log_controller.g_log('time : ' + str(time.time()) + 'update head imgs')
+                log_controller.g_log('time : ' + func_library.timestamp_to_datetime(time.time()) + 'update head imgs')
                 self.update_head_image()
+        else :
+            if self.log_relogging_ticker.tick(delta_time) :
+                print( 'Failed to logging : ', func_library.timestamp_to_datetime(time.time()))
+                self.function_dispatcher['exit']()
+                sys.exit(0)
+
 
     def update_friend_infos(self) :
         if not self.is_logging:
@@ -208,7 +229,7 @@ class itchat_controller (base_controller.base_controller):
         msg = 'we_assist loging : ' + self.v_itchat.get_itchat_name()
         log_controller.g_log(msg)
         self.is_logging = True
-
+        self.log_relogging_ticker.reset(self.log_relogging_ticker.get_tick_time())
         self.send_msg(msg)
 
         for it in self.components:

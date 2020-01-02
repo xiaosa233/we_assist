@@ -2,16 +2,16 @@ from models import base
 from models import ticker
 import time
 from utils.function_dispatcher import function_dispatcher
+from utils.func_library import func_library
 
 class wakeup_check_component( base.base):
     def __init__(self, controller, limit_time):
         super().__init__()
         self.controller = controller
-        #self.limit_time = limit_time
-        self.limit_time = 90
+        self.limit_time = limit_time
         self.is_enable = False
         self.is_client_good = False
-        self.check_ticker = ticker.ticker(90)
+        self.check_ticker = ticker.ticker(30)
         self.last_arrive_time = 0
 
 
@@ -39,7 +39,7 @@ class wakeup_check_component( base.base):
     def on_arrive(self, tcp_base, data):
         #data Z: key!time
         self.last_arrive_time = float(data)
-        print('last arrive time : ', self.last_arrive_time)
+        print('last arrive time : ', func_library.timestamp_to_datetime(self.last_arrive_time))
 
     def awake_itchat(self):
         print('need to awake')     

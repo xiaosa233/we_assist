@@ -22,7 +22,7 @@ class itchat_task_component (itchat_base_component.itchat_base_component):
     def tick(self, delta_time):
         should_run_time = self.tick_delta
         if delta_time > self.tick_delta :
-            should_run_time -= delta_time - self.tick_delta
+            should_run_time = should_run_time - (delta_time - self.tick_delta)
 
         if should_run_time < 0 :
             should_run_time = 0.00001

@@ -32,7 +32,7 @@ class world_controller:
             self.set_test_mode(json_test_mode)
 
         self.input_dispatcher = function_dispatcher.function_dispatcher.open('input')
-        self.input_dispatcher ['exit'].add(self.on_input_event_exit)
+        self.input_dispatcher['exit'].add(self.on_input_event_exit)
         self.v_tick_controller.initialize()
         self.v_input_manager.initialize()
         self.v_async_controller.initialize()
