@@ -41,7 +41,7 @@ class itchat_controller (base_controller.base_controller):
         self.alarm_clock_ticker = ticker.ticker(1.0) # for alarm clock
 
         #patch to test why I can not success to re logging
-        self.log_relogging_ticker = ticker.ticker(60*3)
+        self.log_relogging_ticker = ticker.ticker(60 * 3)
 
         self.update_head_img_index = 0 # use for switch path when get head imgs
         self.cache_component = None
@@ -144,7 +144,7 @@ class itchat_controller (base_controller.base_controller):
             if self.log_relogging_ticker.tick(delta_time) :
                 print( 'Failed to logging : ', func_library.timestamp_to_datetime(time.time()))
                 self.function_dispatcher['exit']()
-                sys.exit(0)
+                os._exit(-1)
 
 
     def update_friend_infos(self) :

@@ -5,8 +5,10 @@ taskkill /pid %1 -f
 
 rem check web connection
 echo "begin ping www.baidu.com"
+
 set ping_time=0
 :loop
+echo %date% : %time%
 ping www.baidu.com
 set return_value=%ERRORLEVEL%
 set /A ping_time=ping_time+1

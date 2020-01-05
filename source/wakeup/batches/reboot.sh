@@ -6,6 +6,7 @@ kill -s 9 $1
 return_code=1
 ping_times=0
 while [ $return_code -ne 0 ]; do
+        date
         ping -c 4 www.baidu.com
         return_code=$?
         ((ping_times=ping_times+1))

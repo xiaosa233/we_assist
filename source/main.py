@@ -27,4 +27,4 @@ def main() :
 
 main()
 
-sys.exit()
+os._exit(0)
