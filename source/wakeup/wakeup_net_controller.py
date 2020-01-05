@@ -31,7 +31,7 @@ class wakeup_net_controller(base_controller.base_controller) :
             it.destroy()
 
     def on_error_cb(self, tpc_base, exception):
-        print(' wakeup error: ', str(exception))
+        #print(' wakeup error: ', str(exception))
         check_component = self.get_component('wakeup_check_component')
         if check_component :
             check_component.is_client_good = False
