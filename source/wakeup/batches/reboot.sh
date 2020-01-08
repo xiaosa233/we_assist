@@ -18,4 +18,6 @@ done
 
 #reboot
 sleep 3s
+
+echo "python $2/main.py > log.tx &"
 python $2/main.py > log.txt &
